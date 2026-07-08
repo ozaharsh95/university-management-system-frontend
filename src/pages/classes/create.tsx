@@ -1,7 +1,7 @@
 import { CreateView } from "@/components/refine-ui/views/create-view";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { useBack } from "@refinedev/core";
+import { useBack, useList } from "@refinedev/core";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useForm } from "@refinedev/react-hook-form";
@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import UploadWidget from "@/components/upload-widget";
+import { Subject, User } from "@/types";
 const ClassesCreate = () => {
   const back = useBack();
 
@@ -52,7 +53,7 @@ const ClassesCreate = () => {
 
   const onSubmit = async (values: z.infer<typeof classSchema>) => {
     try {
-      console.log(values);
+      await onFinish(values);
     } catch (error) {
       console.log(error);
 
@@ -60,21 +61,32 @@ const ClassesCreate = () => {
     }
   };
 
-  const subjects = [
-    { id: 1, name: "Mathematics", code: "MATH" },
-    { id: 2, name: "Computer science", code: "CS" },
-    { id: 3, name: "Physics", code: "PHY" },
-    { id: 4, name: "Chemistry", code: "CHEM" },
-  ];
-
-  const teachers = [
-    {
-      id: 1,
-      name: "Manish",
+  const { query: subjectsQuery } = useList<Subject>({
+    resource: "subjects",
+    pagination: {
+      pageSize: 100,
     },
-    { id: 2, name: "Vimlesh" },
-    { id: 3, name: "Vikram" },
-  ];
+  });
+
+  const { query: teachersQuery } = useList<User>({
+    resource: "users",
+    filters: [
+      {
+        field: "role",
+        operator: "eq",
+        value: "teacher",
+      },
+    ],
+    pagination: {
+      pageSize: 100,
+    },
+  });
+
+  const subjects = subjectsQuery?.data?.data || [];
+  const subjectsLoading = subjectsQuery?.isLoading;
+
+  const teachers = teachersQuery?.data?.data || [];
+  const teachersLoading = teachersQuery?.isLoading;
 
   return (
     <CreateView className="class-view">
@@ -166,6 +178,7 @@ const ClassesCreate = () => {
                     </FormItem>
                   )}
                 />
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <FormField
                     control={control}
@@ -181,6 +194,7 @@ const ClassesCreate = () => {
                             field.onChange(Number(value))
                           }
                           value={field?.value?.toString()}
+                          disabled={subjectsLoading}
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
@@ -216,6 +230,7 @@ const ClassesCreate = () => {
                         <Select
                           onValueChange={field.onChange}
                           value={field?.value?.toString()}
+                          disabled={teachersLoading}
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
