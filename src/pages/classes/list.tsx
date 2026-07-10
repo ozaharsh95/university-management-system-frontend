@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ShowButton } from "@/components/refine-ui/buttons/show";
 const classesList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("all");
@@ -131,6 +132,22 @@ const classesList = () => {
           header: () => <p className="column-title ml-2">Capacity</p>,
           cell: ({ getValue }) => (
             <span className="truncate line-clamp-2">{getValue<string>()}</span>
+          ),
+        },
+        {
+          id: "details",
+
+          size: 150,
+          header: () => <p className="column-title ml-2">Details</p>,
+          cell: ({ row }) => (
+            <ShowButton
+              resource="classes"
+              recordItemId={row.original.id}
+              variant={"outline"}
+              size={"sm"}
+            >
+              View
+            </ShowButton>
           ),
         },
       ],
