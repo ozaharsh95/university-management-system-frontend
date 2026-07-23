@@ -30,7 +30,9 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -58,10 +60,30 @@ export const SignInForm = () => {
   const handleSignIn = async (values: SignInFormValues) => {
     const { email, password } = values;
 
-    login({
-      email,
-      password,
-    });
+    login(
+      {
+        email,
+        password,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.success === false) {
+            toast.error(data.error?.message || "Invalid credentials", {
+              richColors: true,
+            });
+            return;
+          }
+          toast.success("Welcome back!", {
+            richColors: true,
+          });
+        },
+        onError: (error) => {
+          toast.error(error?.message || "Login failed. Please try again.", {
+            richColors: true,
+          });
+        },
+      },
+    );
   };
 
   const handleSignInWithGoogle = () => {
@@ -136,6 +158,7 @@ export const SignInForm = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -148,6 +171,7 @@ export const SignInForm = () => {
                     <FormControl>
                       <InputPassword id="password" required {...field} />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

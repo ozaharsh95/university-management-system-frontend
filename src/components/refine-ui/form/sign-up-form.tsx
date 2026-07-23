@@ -77,7 +77,7 @@ export const SignUpForm = () => {
           ...values,
           name: values.name,
           image: values.image || undefined,
-          imageCldpubId: values.imageCldPubId || undefined,
+          imageCldPubId: values.imageCldPubId || undefined,
         },
         {
           onSuccess: (data) => {
