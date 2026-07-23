@@ -1,7 +1,4 @@
 "use client";
-
-import { useState } from "react";
-
 import { InputPassword } from "@/components/refine-ui/form/input-password";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import {
@@ -23,37 +21,88 @@ import {
   useRegister,
 } from "@refinedev/core";
 
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ROLE_OPTIONS } from "@/constants";
+import { UserRole } from "@/types";
+import UploadWidget from "@/components/upload-widget";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { toast } from "sonner";
+
+const registerSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  role: z.nativeEnum(UserRole),
+  image: z.string().optional(),
+  imageCldPubId: z.string().optional(),
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
+
 export const SignUpForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const Link = useLink();
+  const { mutate: register, isPending: isRegistering } = useRegister();
+
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      role: UserRole.STUDENT,
+      image: "",
+      imageCldPubId: "",
+    },
+  });
+
+  const imagePublicId = form.watch("imageCldPubId");
 
   const { open } = useNotification();
 
-  const Link = useLink();
-
   const { title } = useRefineOptions();
 
-  const { mutate: register } = useRegister();
+  const onSubmit = async (values: RegisterFormValues) => {
+    try {
+      register(
+        {
+          ...values,
+          name: values.name,
+          image: values.image || undefined,
+          imageCldpubId: values.imageCldPubId || undefined,
+        },
+        {
+          onSuccess: (data) => {
+            if (data.success === false) {
+              toast.error(data.error?.message, {
+                richColors: true,
+              });
+              return;
+            }
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (password !== confirmPassword) {
+            toast.success("Account created successfully!", {
+              richColors: true,
+            });
+            form.reset();
+          },
+        },
+      );
+    } catch (error) {
+      console.log("Register user form error : ", error);
       open?.({
         type: "error",
-        message: "Passwords don't match",
-        description:
-          "Please make sure both password fields contain the same value.",
+        message: "Error",
+        description: "Something went wrong.",
       });
-
-      return;
     }
-
-    register({
-      email,
-      password,
-    });
   };
 
   const handleSignUpWithGoogle = () => {
@@ -77,7 +126,7 @@ export const SignUpForm = () => {
         "justify-center",
         "px-6",
         "py-8",
-        "min-h-svh"
+        "min-h-svh",
       )}
     >
       <div className={cn("flex", "items-center", "justify-center", "gap-2")}>
@@ -97,7 +146,7 @@ export const SignUpForm = () => {
               "text-green-600",
               "dark:text-green-400",
               "text-3xl",
-              "font-semibold"
+              "font-semibold",
             )}
           >
             Sign up
@@ -111,59 +160,157 @@ export const SignUpForm = () => {
 
         <Separator />
 
-        <CardContent className={cn("px-0")}>
-          <form onSubmit={handleSignUp}>
-            <div className={cn("flex", "flex-col", "gap-2")}>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder=""
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div
-              className={cn("relative", "flex", "flex-col", "gap-2", "mt-6")}
+        <CardContent className="content">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="form space-y-2"
             >
-              <Label htmlFor="password">Password</Label>
-              <InputPassword
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role *</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        className="flex sm:flex-row gap-4 w-full"
+                      >
+                        {ROLE_OPTIONS.map((role) => {
+                          const isSelected = field.value === role.value;
+                          return (
+                            <Label
+                              key={role.value}
+                              htmlFor={`role-${role.value}`}
+                              className={cn(
+                                "w-full flex items-center space-x-3 rounded-md border border-input bg-background px-4 py-3 hover:bg-accent/50 cursor-pointer transition-all duration-200",
+                                isSelected &&
+                                  "border-primary bg-primary/10 text-primary",
+                              )}
+                            >
+                              <RadioGroupItem
+                                value={role.value}
+                                id={`role-${role.value}`}
+                              />
+                              <span className="font-semibold text-sm flex-1">
+                                {role.label}
+                              </span>
+                            </Label>
+                          );
+                        })}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div
-              className={cn("relative", "flex", "flex-col", "gap-2", "mt-6")}
-            >
-              <Label htmlFor="confirmPassword">Confirm password</Label>
-              <InputPassword
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
+              {/* Profile Photo Upload */}
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Profile Photo</FormLabel>
+                    <FormControl>
+                      <UploadWidget
+                        value={
+                          field.value
+                            ? {
+                                url: field.value,
+                                publicId: imagePublicId ?? "",
+                              }
+                            : null
+                        }
+                        onChange={(file) => {
+                          if (file) {
+                            field.onChange(file.url);
+                            form.setValue("imageCldPubId", file.publicId, {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
+                          } else {
+                            field.onChange("");
+                            form.setValue("imageCldPubId", "", {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                            });
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              className={cn(
-                "w-full",
-                "mt-6",
-                "bg-green-600",
-                "hover:bg-green-700",
-                "text-white"
-              )}
-            >
-              Sign up
-            </Button>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className={cn("flex", "items-center", "gap-4", "mt-6")}>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <InputPassword
+                        {...field}
+                        placeholder="Enter your password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                size="lg"
+                className={cn(
+                  "w-full",
+                  "mt-6",
+                  "bg-green-600",
+                  "hover:bg-green-700",
+                  "text-white",
+                )}
+                disabled={form.formState.isSubmitting || isRegistering}
+              >
+                {form.formState.isSubmitting || isRegistering
+                  ? "Signing up..."
+                  : "Sign up"}
+              </Button>
+
+              {/* Will implement signup/ sign in using google and github */}
+
+              {/* <div className={cn("flex", "items-center", "gap-4", "mt-6")}>
               <Separator className={cn("flex-1")} />
               <span className={cn("text-sm", "text-muted-foreground")}>or</span>
               <Separator className={cn("flex-1")} />
@@ -214,8 +361,9 @@ export const SignUpForm = () => {
                   <div>GitHub</div>
                 </Button>
               </div>
-            </div>
-          </form>
+            </div> */}
+            </form>
+          </Form>
         </CardContent>
 
         <Separator />
@@ -231,7 +379,7 @@ export const SignUpForm = () => {
                 "text-blue-600",
                 "dark:text-blue-400",
                 "font-semibold",
-                "underline"
+                "underline",
               )}
             >
               Sign in
