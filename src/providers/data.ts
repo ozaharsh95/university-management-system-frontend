@@ -65,6 +65,21 @@ const options: CreateDataProviderOptions = {
             params.teacher = value;
           }
         }
+
+        if (resource === "users") {
+          if (field === "name" || field === "email" || field === "search") {
+            params.search = value;
+          }
+          if (field === "role") {
+            params.role = value;
+          }
+        }
+
+        if (resource === "announcements") {
+          if (field === "category") {
+            params.category = value;
+          }
+        }
       });
 
       return params;
