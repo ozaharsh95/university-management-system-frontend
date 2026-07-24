@@ -44,7 +44,7 @@ const Dashboard = () => {
           {!isUserLoading && user?.role && (
             <div className="self-start md:self-center">
               <span className="inline-flex items-center rounded-full bg-primary/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-primary border border-primary/25">
-                System {user.role}
+                {user.role}
               </span>
             </div>
           )}
