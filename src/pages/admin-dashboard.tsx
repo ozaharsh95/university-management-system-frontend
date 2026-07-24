@@ -1,6 +1,6 @@
-import { useCustom, useGetIdentity } from "@refinedev/core";
+import { useCustom } from "@refinedev/core";
 import { BACKEND_BASE_URL } from "@/constants";
-import { User } from "@/types";
+
 import {
   DashboardKpis,
   KpiData,
@@ -32,19 +32,19 @@ interface ActivityResponse {
 const AdminDashboard = () => {
   // Fetch overview stats
   const { query: overviewQuery } = useCustom<OverviewResponse>({
-    url: `${BACKEND_BASE_URL}stats/overview`,
+    url: `${BACKEND_BASE_URL}stats/admin/overview`,
     method: "get",
   });
 
   // Fetch charts data
   const { query: chartsQuery } = useCustom<ChartsResponse>({
-    url: `${BACKEND_BASE_URL}stats/charts`,
+    url: `${BACKEND_BASE_URL}stats/admin/charts`,
     method: "get",
   });
 
   // Fetch table data
   const { query: tableQuery } = useCustom<ActivityResponse>({
-    url: `${BACKEND_BASE_URL}stats/activity`,
+    url: `${BACKEND_BASE_URL}stats/admin/activity`,
     method: "get",
   });
 
