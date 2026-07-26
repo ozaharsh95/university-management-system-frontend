@@ -18,6 +18,7 @@ import {
   SidebarHeader as ShadcnSidebarHeader,
   SidebarRail as ShadcnSidebarRail,
   SidebarTrigger as ShadcnSidebarTrigger,
+  SidebarFooter as ShadcnSidebarFooter,
   useSidebar as useShadcnSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
@@ -38,11 +39,39 @@ export function Sidebar() {
   const { data: currentUser } = useGetIdentity<User>();
 
   const filteredMenuItems = menuItems.filter((item) => {
-    if (item.name === "users" && currentUser?.role !== UserRole.ADMIN) {
-      return false;
+    const role = currentUser?.role;
+
+    if (role === UserRole.ADMIN) {
+      return ["dashboard", "users", "departments", "subjects", "classes", "enrollments", "announcements", "reports", "profile"].includes(item.name);
+    }
+    if (role === UserRole.TEACHER) {
+      return ["dashboard", "classes", "users", "announcements", "schedule", "profile"].includes(item.name);
+    }
+    if (role === UserRole.STUDENT) {
+      return ["dashboard", "classes", "join-class", "schedule", "announcements", "profile"].includes(item.name);
     }
     return true;
+  }).map((item) => {
+    const role = currentUser?.role;
+    if (item.name === "classes" && (role === UserRole.TEACHER || role === UserRole.STUDENT)) {
+      return {
+        ...item,
+        meta: { ...item.meta, label: "My Classes" },
+        label: "My Classes",
+      };
+    }
+    if (item.name === "users" && role === UserRole.TEACHER) {
+      return {
+        ...item,
+        meta: { ...item.meta, label: "Students" },
+        label: "Students",
+      };
+    }
+    return item;
   });
+
+  const mainMenuItems = filteredMenuItems.filter((item) => item.name !== "profile");
+  const profileMenuItem = filteredMenuItems.find((item) => item.name === "profile");
 
   return (
     <ShadcnSidebar collapsible="icon" className={cn("border-none")}>
@@ -65,7 +94,7 @@ export function Sidebar() {
           }
         )}
       >
-        {filteredMenuItems.map((item: TreeMenuItem) => (
+        {mainMenuItems.map((item: TreeMenuItem) => (
           <SidebarItem
             key={item.key || item.name}
             item={item}
@@ -73,6 +102,31 @@ export function Sidebar() {
           />
         ))}
       </ShadcnSidebarContent>
+      {profileMenuItem && (
+        <ShadcnSidebarFooter
+          className={cn(
+            "transition-discrete",
+            "duration-200",
+            "flex",
+            "flex-col",
+            "gap-2",
+            "pt-2",
+            "pb-2",
+            "border-r",
+            "border-border",
+            {
+              "px-3": open,
+              "px-1": !open,
+            }
+          )}
+        >
+          <SidebarItem
+            key={profileMenuItem.key || profileMenuItem.name}
+            item={profileMenuItem}
+            selectedKey={selectedKey}
+          />
+        </ShadcnSidebarFooter>
+      )}
     </ShadcnSidebar>
   );
 }
