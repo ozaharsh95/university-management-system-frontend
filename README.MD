@@ -1,120 +1,127 @@
 # 🎨 EduHub Frontend — React 19, Refine & Shadcn UI
 
-EduHub is a premium, full-featured **University Management System** client. Built with **React 19**, **Refine**, **Tailwind CSS v4**, and **Shadcn UI**, it provides a role-based, glassmorphic administrative interface designed for modern educational environments.
+EduHub is a premium, full-featured **University Management System** client application. Built with **React 19**, **Refine Framework**, **Tailwind CSS v4**, and **Shadcn UI**, it offers a state-of-the-art, role-based, glassmorphic dashboard interface for administrative staff, teachers, and students.
 
 > [!NOTE]
-> This repository represents the client-side implementation of EduHub. It integrates with the Express, Drizzle, and Arcjet security backend to offer telemetry-driven analytics, role-based navigation guards, and cloud image uploads.
+> This repository contains the client-side (frontend) implementation of EduHub. It is built to seamlessly interface with the EduHub Backend API to handle role-based navigation, live telemetry dashboards, course enrollments, class management, and Cloudinary image uploads.
 
 ---
 
-## 🚀 Key Portfolio Highlights
+## 🚀 Key Highlights
 
-When presenting this project in your portfolio, highlight these three engineering achievements:
-
-1. **Declarative CRUD with Refine**: Replaced hundreds of lines of boilerplate routing, pagination, state sync, and data tables with **Refine Resources**. This guarantees robust table-filtering, search telemetry, and form states.
-2. **Dynamic Role-Based Access Control (RBAC)**: Implemented secure auth guards utilizing **Better-Auth** client and Refine's context. The navigation menu and dashboard components adapt in real time to the user's role: `admin`, `teacher`, or `student`.
-3. **Immersive Glassmorphic Design System**: Engineered using **Tailwind CSS v4** and **Shadcn UI**. Utilizes high-performance responsive graphs via **Recharts**, customized tooltips, animated greetings, and smooth CSS transitions.
-
----
-
-## 🛠️ Technology Stack
-
-| Layer | Technology | Key Purpose |
-| :--- | :--- | :--- |
-| **Core Framework** | React 19 & Vite 6 | High performance rendering, ESM compilation, and rapid hot module replacement. |
-| **State & CRUD Engine** | Refine Core (`@refinedev/core`) | Enterprise-level data hooks, caching, resource synchronization, and data providers. |
-| **Routing Guard** | React Router v7 & Refine Router | Strict guard routes, unsaved changes warn notifier, and dynamic role-based URL routing. |
-| **Security & Session** | Better-Auth Client SDK | Client-side session tracking, secure OAuth/email login, and cookie auth synchronization. |
-| **Visual Framework** | Tailwind CSS v4 & Shadcn UI | Utility-first styling with modern nesting, Radix UI primitives, dark mode, and custom transitions. |
-| **Analytics Engine** | Recharts | Canvas-based dynamic visualization of user statistics, subject distribution, and telemetry. |
-| **Form Integrity** | React Hook Form & Zod | Strong schema validations on forms (join class, registration, class creation). |
-| **Media Pipeline** | Cloudinary React SDK | Direct cloud uploads for user avatar profiles and subject thumbnail images. |
+*   **Declarative CRUD & Resource Routing**: Leverages the power of **Refine Core** to abstract away routing, data pagination, filtering, sorting, and state management, providing a unified developer interface.
+*   **Dynamic Role-Based Access Control (RBAC)**: Secure authentication and session validation using the **Better-Auth** client library. Navigation layouts, action components, and dashboard portals automatically adapt to user roles (`admin`, `teacher`, or `student`).
+*   **Aesthetic & Modern UI System**: A responsive dashboard engineered with **Tailwind CSS v4** and customized **Shadcn UI** primitives (via Radix). Features interactive charting with **Recharts**, seamless light/dark mode transitions, and subtle hover animations.
+*   **Interactive Command Palette (Kbar)**: Integrates `@refinedev/kbar` (accessible via `Cmd+K` or `Ctrl+K`) for rapid navigation and action execution across different resources.
 
 ---
 
-## 🧭 System Architecture & Workflows
+## 🛠️ Tech Stack & Architecture
 
-### 1. Unified Resource Control (`src/App.tsx`)
-Rather than maintaining extensive route configs, resources are declared central to the Refine orchestrator. This maps routes automatically to lists, creates, shows, and edits:
-```tsx
-<Refine
-  dataProvider={dataProvider}
-  authProvider={authProvider}
-  resources={[
-    { name: "dashboard", list: "/" },
-    { name: "subjects", list: "/subjects", create: "/subjects/create" },
-    { name: "classes", list: "/classes", create: "/classes/create", show: "/classes/show/:id" },
-    { name: "users", list: "/users" },
-    { name: "announcements", list: "/announcements" },
-    { name: "departments", list: "/departments" },
-    { name: "enrollments", list: "/enrollments" },
-    { name: "join-class", list: "/join-class" },
-    { name: "schedule", list: "/schedule" },
-    { name: "profile", list: "/profile" },
-    { name: "reports", list: "/reports" }
-  ]}
->
-```
+### Frontend Core
+*   **React 19 & Vite 6**: High-performance UI rendering and next-generation ES module building.
+*   **Refine Framework (`@refinedev/core`)**: Enterprise-ready CRUD hooks, automated routing synchronization, and custom data providers.
+*   **React Router v7 & Refine Router**: Route guards, unsaved changes notifications, and dynamic URL layout structures.
 
-### 2. Multi-Role Dashboard Grid (`src/pages/dashboard.tsx`)
-A unified portal that decodes user roles through `useGetIdentity` and renders role-specific dashboards:
-* **Admin Dashboard (`admin-dashboard.tsx`)**: Displays KPI counters (active students, class load percentages), live system activity logs, and Recharts reports comparing student enrollment across departments.
-* **Teacher Dashboard (`teacher-dashboard.tsx`)**: Shows active classes taught, enrolled student counts, calendar schedule blocks, and quick links to manage subjects.
-* **Student Dashboard (`student-dashboard.tsx`)**: Showcases current enrollments, class progress cards, course schedules, and announcements.
+### Authentication & API Security
+*   **Better-Auth Client SDK**: Safe session check, cookie synchronization with backend, and customizable registration with custom role attributes.
+*   **Refine REST Provider (`@refinedev/rest`)**: Data provider customized to connect with the Express backend REST API.
 
-### 3. Quick Global Command Center (`RefineKbar`)
-Integrated with `@refinedev/kbar` (Cmd+K / Ctrl+K), allowing developers and users to trigger fast navigation actions, query commands, or switch layouts on the fly.
+### Design & Visuals
+*   **Tailwind CSS v4**: Advanced CSS capabilities, utility-first layouts, and modern nested stylesheet directives.
+*   **Shadcn UI & Radix UI**: Accessible, premium component primitives (Dialogs, Select fields, Sidebar layouts, Sheet popups, Toasts).
+*   **Recharts**: Modern responsive charts tailored for student/teacher analytics dashboard screens.
+*   **Sonner**: Smooth, customized feedback notifications.
+
+### Media & Form Integrity
+*   **Cloudinary React SDK**: Upload profile avatars and course banners directly to Cloudinary cloud services.
+*   **React Hook Form & Zod Schema**: Client-side form state management and strict schema validations.
 
 ---
 
-## 📂 Project Organization
+## 📂 Codebase Structure
 
-```
-├── public/                 # Static assets & public images
+Below is an overview of the frontend codebase layout:
+
+```text
+├── public/                 # Static assets, logos, and public images
 └── src/
     ├── components/
-    │   ├── dashboards/     # Role-specific dashboard parts (Admin/Teacher/Student)
-    │   ├── refine-ui/      # Customizable layout components, sidebars, buttons, & themes
-    │   ├── ui/             # Reusable Shadcn UI base items (dialog, popover, inputs)
-    │   └── upload-widget   # Cloudinary React SDK upload widget helper
-    ├── constants/          # Environment endpoints & API constants
-    ├── hooks/              # Custom React utilities
-    ├── lib/                # Better-Auth client configuration & utility helpers
-    ├── pages/              # Module directories (classes, profile, reports, schedules, etc.)
-    ├── providers/          # Refine authProvider and custom dataProvider logic
-    ├── types/              # TypeScript schema and payload declarations
-    ├── App.tsx             # Application router tree & Resource mapping
-    └── index.tsx           # Dom initialization root
+    │   ├── dashboards/     # Role-specific dashboard views (Admin, Teacher, Student)
+    │   ├── refine-ui/      # Refine UI layout blocks, sidebar, buttons, themes, and notification providers
+    │   ├── ui/             # Core UI components generated via Shadcn UI CLI (Buttons, Dialogs, Inputs, etc.)
+    │   └── upload-widget.tsx # Cloudinary upload helper component
+    ├── constants/          # Application-wide constants, enums (e.g., USER_ROLES), and environment selectors
+    ├── hooks/              # Custom helper React hooks
+    ├── lib/                # Library client configurations (Better-Auth client, Cloudinary helper, and utilities)
+    ├── pages/              # Specific resource page folders (classes, profile, reports, announcements, etc.)
+    ├── providers/          # Refine Custom Data Provider and Auth Provider integrations
+    ├── types/              # TypeScript types and DTO definitions
+    ├── App.css             # Main styling rules and Tailwind custom directives
+    ├── App.tsx             # Root Refine configuration, Route mappings, and navigation tree
+    └── index.tsx           # React DOM bootstrapping file
 ```
 
 ---
 
-## ⚡ Getting Started
+## 🧭 Application Modules & Pages
+
+The application is structured into the following pages and modules inside `src/pages/`:
+
+*   **🔑 Auth Portal (`/login` & `/register`)**: Custom credential forms supporting role selection (`student` / `teacher`) during registration.
+*   **📊 Dashboard (`/`)**: Customized, role-dependent landing page:
+    *   **Admin Dashboard**: High-level telemetry cards (Active Users, Department lists), recent platform activity feed, and Recharts statistics.
+    *   **Teacher Dashboard**: Classes list under management, current enrollments counts, and schedule slots.
+    *   **Student Dashboard**: Enrolled classes cards, course progression, schedule calendar, and announcement banners.
+*   **🏢 Departments (`/departments`)**: List view of academic departments (e.g., Computer Science, Engineering, Law, etc.).
+*   **📖 Subjects (`/subjects`)**: Manage subjects (creation form and catalog listing) assigned to specific departments.
+*   **🎓 Classes (`/classes`)**: Detailed class management module including listing, create form (capacity, schedules, status), and class details view (`show.tsx`).
+*   **🔗 Enrollments & Join Class (`/enrollments` & `/join-class`)**: Interfaces for students to list their active enrollments and join new classes by entering invite codes.
+*   **📅 Schedule (`/schedule`)**: Personal weekly schedule view based on class timetables.
+*   **📢 Announcements (`/announcements`)**: Global university bulletin board categorized by tags (General, Academic, Urgent, Holiday).
+*   **👤 Profile (`/profile`)**: Manage personal credentials and profile image upload.
+*   **👥 Users (`/users`)**: Administrator panel to view, search, and manage roles for all registered accounts.
+
+---
+
+## ⚙️ Getting Started
 
 ### 1. Prerequisites
-Ensure you have **Node.js v20+** and **npm** installed.
+Ensure you have **Node.js v20+** and **npm** installed on your machine.
 
-### 2. Environment Configuration
-Create a `.env` file in the root folder and configure:
+### 2. Environment Setup
+Create a `.env` file in the root of this frontend folder and define the following keys:
+
 ```env
-VITE_API_URL=http://localhost:5000/
-VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-VITE_CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+# Mock rest API used by Refine Devtools or backup calls
+VITE_API_URL="https://api.fake-rest.refine.dev"
+
+# Base REST URL pointing to your running EduHub Backend instance
+VITE_BACKEND_BASE_URL="http://localhost:8000/api/"
+
+# Cloudinary credentials for media upload capabilities
+VITE_CLOUDINARY_CLOUD_NAME="your_cloudinary_cloud_name"
+VITE_CLOUDINARY_UPLOAD_PRESET="your_upload_preset"
+VITE_CLOUDINARY_UPLOAD_URL="https://api.cloudinary.com/v1_1/your_cloudinary_cloud_name/image/upload"
 ```
 
 ### 3. Installation
+Install the package dependencies:
 ```bash
 npm install
 ```
 
 ### 4. Run Development Server
+Start the development server with Refine Devtools panel support:
 ```bash
 npm run dev
 ```
-Runs the application on `http://localhost:5173` with Refine Devtools enabled.
+By default, the server will open on `http://localhost:5173`.
 
 ### 5. Build for Production
+To bundle and optimize the codebase for production delivery:
 ```bash
 npm run build
 ```
-Creates a optimized static distribution bundle in the `/dist` directory.
+This generates a static distribution folder under `dist/` ready to be served by any CDN or static hosting platform (Vercel, Netlify, etc.).
+
