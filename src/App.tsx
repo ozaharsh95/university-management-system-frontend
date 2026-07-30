@@ -31,6 +31,9 @@ import ProfilePage from "./pages/profile/index";
 import ReportsPage from "./pages/reports/index";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+import { UserRole } from "./types";
+import { RequireRole } from "./components/require-role";
+
 
 function App() {
   return (
@@ -178,16 +181,18 @@ function App() {
                   <Route path="announcements">
                     <Route index element={<AnnouncementsList />} />
                   </Route>
-                  <Route path="departments">
-                    <Route index element={<DepartmentsList />} />
-                  </Route>
-                  <Route path="enrollments">
-                    <Route index element={<EnrollmentsList />} />
+                  <Route element={<RequireRole roles={[UserRole.ADMIN]} />}>
+                    <Route path="departments">
+                      <Route index element={<DepartmentsList />} />
+                    </Route>
+                    <Route path="enrollments">
+                      <Route index element={<EnrollmentsList />} />
+                    </Route>
+                    <Route path="reports" element={<ReportsPage />} />
                   </Route>
                   <Route path="join-class" element={<JoinClassPage />} />
                   <Route path="schedule" element={<SchedulePage />} />
                   <Route path="profile" element={<ProfilePage />} />
-                  <Route path="reports" element={<ReportsPage />} />
                 </Route>
               </Routes>
               <Toaster />
