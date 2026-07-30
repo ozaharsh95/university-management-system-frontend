@@ -36,42 +36,83 @@ import { User, UserRole } from "@/types";
 export function Sidebar() {
   const { open } = useShadcnSidebar();
   const { menuItems, selectedKey } = useMenu();
-  const { data: currentUser } = useGetIdentity<User>();
+  const { data: currentUser, isLoading } = useGetIdentity<User>();
 
-  const filteredMenuItems = menuItems.filter((item) => {
-    const role = currentUser?.role;
+  if (isLoading) {
+    return null;
+  }
 
-    if (role === UserRole.ADMIN) {
-      return ["dashboard", "users", "departments", "subjects", "classes", "enrollments", "announcements", "reports", "profile"].includes(item.name);
-    }
-    if (role === UserRole.TEACHER) {
-      return ["dashboard", "classes", "users", "announcements", "schedule", "profile"].includes(item.name);
-    }
-    if (role === UserRole.STUDENT) {
-      return ["dashboard", "classes", "join-class", "schedule", "announcements", "profile"].includes(item.name);
-    }
-    return true;
-  }).map((item) => {
-    const role = currentUser?.role;
-    if (item.name === "classes" && (role === UserRole.TEACHER || role === UserRole.STUDENT)) {
-      return {
-        ...item,
-        meta: { ...item.meta, label: "My Classes" },
-        label: "My Classes",
-      };
-    }
-    if (item.name === "users" && role === UserRole.TEACHER) {
-      return {
-        ...item,
-        meta: { ...item.meta, label: "Students" },
-        label: "Students",
-      };
-    }
-    return item;
-  });
+  const filteredMenuItems = menuItems
+    .filter((item) => {
+      const role = currentUser?.role;
 
-  const mainMenuItems = filteredMenuItems.filter((item) => item.name !== "profile");
-  const profileMenuItem = filteredMenuItems.find((item) => item.name === "profile");
+      switch (role) {
+        case UserRole.ADMIN:
+          return [
+            "dashboard",
+            "users",
+            "departments",
+            "subjects",
+            "classes",
+            "enrollments",
+            "announcements",
+            "reports",
+            "profile",
+          ].includes(item.name);
+
+        case UserRole.TEACHER:
+          return [
+            "dashboard",
+            "classes",
+            "users",
+            "announcements",
+            "schedule",
+            "profile",
+          ].includes(item.name);
+
+        case UserRole.STUDENT:
+          return [
+            "dashboard",
+            "classes",
+            "join-class",
+            "schedule",
+            "announcements",
+            "profile",
+          ].includes(item.name);
+
+        default:
+          // identity is still loading or role is invalid
+          return false;
+      }
+    })
+    .map((item) => {
+      const role = currentUser?.role;
+      if (
+        item.name === "classes" &&
+        (role === UserRole.TEACHER || role === UserRole.STUDENT)
+      ) {
+        return {
+          ...item,
+          meta: { ...item.meta, label: "My Classes" },
+          label: "My Classes",
+        };
+      }
+      if (item.name === "users" && role === UserRole.TEACHER) {
+        return {
+          ...item,
+          meta: { ...item.meta, label: "Students" },
+          label: "Students",
+        };
+      }
+      return item;
+    });
+
+  const mainMenuItems = filteredMenuItems.filter(
+    (item) => item.name !== "profile",
+  );
+  const profileMenuItem = filteredMenuItems.find(
+    (item) => item.name === "profile",
+  );
 
   return (
     <ShadcnSidebar collapsible="icon" className={cn("border-none")}>
@@ -91,7 +132,7 @@ export function Sidebar() {
           {
             "px-3": open,
             "px-1": !open,
-          }
+          },
         )}
       >
         {mainMenuItems.map((item: TreeMenuItem) => (
@@ -117,7 +158,7 @@ export function Sidebar() {
             {
               "px-3": open,
               "px-1": !open,
-            }
+            },
           )}
         >
           <SidebarItem
@@ -176,7 +217,7 @@ function SidebarItemGroup({ item, selectedKey }: MenuItemProps) {
             "opacity-100": open,
             "pointer-events-none": !open,
             "pointer-events-auto": open,
-          }
+          },
         )}
       >
         {getDisplayName(item)}
@@ -208,7 +249,7 @@ function SidebarItemCollapsible({ item, selectedKey }: MenuItemProps) {
         "text-muted-foreground",
         "transition-transform",
         "duration-200",
-        "group-data-[state=open]:rotate-90"
+        "group-data-[state=open]:rotate-90",
       )}
     />
   );
@@ -287,7 +328,7 @@ function SidebarHeader() {
         "flex-row",
         "items-center",
         "justify-between",
-        "overflow-hidden"
+        "overflow-hidden",
       )}
     >
       <div
@@ -304,7 +345,7 @@ function SidebarHeader() {
           {
             "pl-3": !open,
             "pl-5": open,
-          }
+          },
         )}
       >
         <div>{title.icon}</div>
@@ -317,7 +358,7 @@ function SidebarHeader() {
             {
               "opacity-0": !open,
               "opacity-100": open,
-            }
+            },
           )}
         >
           {title.text}
@@ -411,7 +452,7 @@ function SidebarButton({
           "text-sidebar-primary-foreground": isSelected,
           "hover:text-sidebar-primary-foreground": isSelected,
         },
-        className
+        className,
       )}
       onClick={onClick}
       {...props}
