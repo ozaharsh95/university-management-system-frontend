@@ -19,8 +19,9 @@ import {
 } from "@/components/ui/select";
 import { ShowButton } from "@/components/refine-ui/buttons/show";
 
-const classesList = () => {
-  const { data: currentUser, isLoading: isIdentityLoading } = useGetIdentity<User>();
+const ClassesList = () => {
+  const { data: currentUser, isLoading: isIdentityLoading } =
+    useGetIdentity<User>();
   const isTeacher = currentUser?.role === UserRole.TEACHER;
   const isStudent = currentUser?.role === UserRole.STUDENT;
 
@@ -188,7 +189,12 @@ const classesList = () => {
         mode: "server",
       },
       filters: {
-        permanent: [...subjectFilters, ...teacherFilters, ...searchFilters, ...roleFilters],
+        permanent: [
+          ...subjectFilters,
+          ...teacherFilters,
+          ...searchFilters,
+          ...roleFilters,
+        ],
       },
       sorters: {
         initial: [{ field: "id", order: "desc" }],
@@ -211,7 +217,9 @@ const classesList = () => {
     <ListView>
       <Breadcrumb />
 
-      <h1 className="page-title">{isTeacher || isStudent ? "My Classes" : "Classes"}</h1>
+      <h1 className="page-title">
+        {isTeacher || isStudent ? "My Classes" : "Classes"}
+      </h1>
 
       <div className="intro-row">
         <p>
@@ -285,4 +293,4 @@ const classesList = () => {
   );
 };
 
-export default classesList;
+export default ClassesList;
