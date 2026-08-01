@@ -329,8 +329,6 @@ const EnrollmentsList = () => {
                           setStudentSearch(e.target.value);
                           onSearchStudents(e.target.value);
                         }}
-                        onKeyDown={(e) => e.stopPropagation()}
-                        onPointerDown={(e) => e.stopPropagation()}
                       />
                     </div>
                     {isStudentsLoading ? (
@@ -370,8 +368,6 @@ const EnrollmentsList = () => {
                           setClassSearch(e.target.value);
                           onSearchClasses(e.target.value);
                         }}
-                        onKeyDown={(e) => e.stopPropagation()}
-                        onPointerDown={(e) => e.stopPropagation()}
                       />
                     </div>
                     {isClassesLoading ? (
