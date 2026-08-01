@@ -1,6 +1,6 @@
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { CreateButton } from "@/components/refine-ui/buttons/create";
@@ -20,7 +20,7 @@ import {
 import { ShowButton } from "@/components/refine-ui/buttons/show";
 
 const classesList = () => {
-  const { data: currentUser } = useGetIdentity<User>();
+  const { data: currentUser, isLoading: isIdentityLoading } = useGetIdentity<User>();
   const isTeacher = currentUser?.role === UserRole.TEACHER;
   const isStudent = currentUser?.role === UserRole.STUDENT;
 
@@ -85,6 +85,7 @@ const classesList = () => {
     : [];
 
   const roleFilters = useMemo(() => {
+    if (!currentUser) return [];
     const filters = [];
     if (isTeacher && currentUser?.id) {
       filters.push({
@@ -192,8 +193,19 @@ const classesList = () => {
       sorters: {
         initial: [{ field: "id", order: "desc" }],
       },
+      queryOptions: {
+        enabled: !!currentUser,
+      },
     },
   });
+
+  if (isIdentityLoading || !currentUser) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <ListView>

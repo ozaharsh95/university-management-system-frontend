@@ -1,6 +1,6 @@
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Search, Edit, ShieldAlert } from "lucide-react";
+import { Search, Edit, ShieldAlert, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
 import {
@@ -29,7 +29,7 @@ import { User, UserRole } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 
 const UsersList = () => {
-  const { data: currentUser } = useGetIdentity<User>();
+  const { data: currentUser, isLoading: isIdentityLoading } = useGetIdentity<User>();
   const isTeacher = currentUser?.role === UserRole.TEACHER;
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,6 +42,7 @@ const UsersList = () => {
   const isUpdating = updateMutation.isPending;
 
   const activeFilters = useMemo(() => {
+    if (!currentUser) return [];
     const filters = [];
     if (isTeacher) {
       filters.push({
@@ -64,7 +65,7 @@ const UsersList = () => {
       });
     }
     return filters;
-  }, [roleFilter, searchQuery, isTeacher]);
+  }, [roleFilter, searchQuery, isTeacher, currentUser]);
 
   const userTable = useTable<User>({
     columns: useMemo<ColumnDef<User>[]>(
@@ -187,6 +188,9 @@ const UsersList = () => {
       sorters: {
         initial: [{ field: "id", order: "desc" }],
       },
+      queryOptions: {
+        enabled: !!currentUser,
+      },
     },
   });
 
@@ -224,6 +228,14 @@ const UsersList = () => {
       },
     );
   };
+
+  if (isIdentityLoading || !currentUser) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <ListView>
