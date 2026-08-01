@@ -51,6 +51,12 @@ const SchedulePage = () => {
   const { query: classesQuery } = useCustom<any>({
     url: `${BACKEND_BASE_URL}classes`,
     method: "get",
+    config: {
+      query: role === UserRole.TEACHER ? {
+        teacherId: user?.id,
+        limit: 100,
+      } : undefined,
+    },
     queryOptions: {
       enabled: role === UserRole.TEACHER || role === UserRole.ADMIN,
     },
@@ -69,10 +75,7 @@ const SchedulePage = () => {
       const formattedItems: UnifiedScheduleItem[] = [];
 
       allClassItems.forEach((cls: any) => {
-        // For teacher, only show their classes
-        if (role === UserRole.TEACHER && cls.teacherId !== user?.id) {
-          return;
-        }
+
 
         if (Array.isArray(cls.schedules)) {
           cls.schedules.forEach((sch: Schedule) => {
