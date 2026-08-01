@@ -31,6 +31,8 @@ const ProfilePage = () => {
           url: user.image,
           publicId: user.imageCldPubId || "",
         });
+      } else {
+        setAvatar(null);
       }
     }
   }, [user]);
