@@ -32,6 +32,7 @@ import {
 import { ChevronRight, ListIcon } from "lucide-react";
 import React from "react";
 import { User, UserRole } from "@/types";
+import { RESOURCE_ROLES } from "@/constants";
 
 export function Sidebar() {
   const { open } = useShadcnSidebar();
@@ -45,45 +46,8 @@ export function Sidebar() {
   const filteredMenuItems = menuItems
     .filter((item) => {
       const role = currentUser?.role;
-
-      switch (role) {
-        case UserRole.ADMIN:
-          return [
-            "dashboard",
-            "users",
-            "departments",
-            "subjects",
-            "classes",
-            "enrollments",
-            "announcements",
-            "reports",
-            "profile",
-          ].includes(item.name);
-
-        case UserRole.TEACHER:
-          return [
-            "dashboard",
-            "classes",
-            "users",
-            "announcements",
-            "schedule",
-            "profile",
-          ].includes(item.name);
-
-        case UserRole.STUDENT:
-          return [
-            "dashboard",
-            "classes",
-            "join-class",
-            "schedule",
-            "announcements",
-            "profile",
-          ].includes(item.name);
-
-        default:
-          // identity is still loading or role is invalid
-          return false;
-      }
+      if (!role) return false;
+      return RESOURCE_ROLES[item.name]?.includes(role) ?? false;
     })
     .map((item) => {
       const role = currentUser?.role;

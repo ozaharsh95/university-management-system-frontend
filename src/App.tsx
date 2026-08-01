@@ -33,6 +33,7 @@ import { Login } from "./pages/login";
 import { Register } from "./pages/register";
 import { UserRole } from "./types";
 import { RequireRole } from "./components/require-role";
+import { RESOURCE_ROLES } from "./constants";
 
 
 function App() {
@@ -175,7 +176,7 @@ function App() {
                     <Route path="create" element={<ClassesCreate />} />
                     <Route path="show/:id" element={<ClassesShow />} />
                   </Route>
-                  <Route element={<RequireRole roles={[UserRole.ADMIN, UserRole.TEACHER]} />}>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.users} />}>
                     <Route path="users">
                       <Route index element={<UsersList />} />
                     </Route>
@@ -183,7 +184,7 @@ function App() {
                   <Route path="announcements">
                     <Route index element={<AnnouncementsList />} />
                   </Route>
-                  <Route element={<RequireRole roles={[UserRole.ADMIN]} />}>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.departments} />}>
                     <Route path="departments">
                       <Route index element={<DepartmentsList />} />
                     </Route>
