@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { CalendarRange, Clock, User2, BookOpen } from "lucide-react";
 import { useGetIdentity, useCustom } from "@refinedev/core";
 import { BACKEND_BASE_URL } from "@/constants";
@@ -34,7 +40,14 @@ const SchedulePage = () => {
   const { data: user } = useGetIdentity<User>();
   const role = user?.role;
 
-  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   const [selectedDay, setSelectedDay] = useState("Monday");
   const [scheduleItems, setScheduleItems] = useState<UnifiedScheduleItem[]>([]);
 
@@ -52,10 +65,13 @@ const SchedulePage = () => {
     url: `${BACKEND_BASE_URL}classes`,
     method: "get",
     config: {
-      query: role === UserRole.TEACHER ? {
-        teacherId: user?.id,
-        limit: 100,
-      } : undefined,
+      query:
+        role === UserRole.TEACHER
+          ? {
+              teacherId: user?.id,
+              limit: 100,
+            }
+          : undefined,
     },
     queryOptions: {
       enabled: role === UserRole.TEACHER || role === UserRole.ADMIN,
@@ -68,15 +84,19 @@ const SchedulePage = () => {
   const classesData = classesQuery.data;
 
   useEffect(() => {
-    if (role === UserRole.STUDENT && studentChartsData?.data?.data?.weeklySchedule) {
+    if (
+      role === UserRole.STUDENT &&
+      studentChartsData?.data?.data?.weeklySchedule
+    ) {
       setScheduleItems(studentChartsData.data.data.weeklySchedule);
-    } else if ((role === UserRole.TEACHER || role === UserRole.ADMIN) && classesData?.data?.data) {
+    } else if (
+      (role === UserRole.TEACHER || role === UserRole.ADMIN) &&
+      classesData?.data?.data
+    ) {
       const allClassItems = classesData.data.data;
       const formattedItems: UnifiedScheduleItem[] = [];
 
       allClassItems.forEach((cls: any) => {
-
-
         if (Array.isArray(cls.schedules)) {
           cls.schedules.forEach((sch: Schedule) => {
             formattedItems.push({
@@ -99,10 +119,10 @@ const SchedulePage = () => {
   }, [role, studentChartsData, classesData, user]);
 
   const activeDaySchedule = scheduleItems.filter(
-    (item) => item.day.toLowerCase() === selectedDay.toLowerCase()
+    (item) => item.day.toLowerCase() === selectedDay.toLowerCase(),
   );
 
-  const isLoading = isStudentLoading || isClassesLoading;
+  const isLoading = !role || isStudentLoading || isClassesLoading;
 
   return (
     <ListView>
@@ -135,7 +155,7 @@ const SchedulePage = () => {
               {daysOfWeek.map((day) => {
                 const isSelected = selectedDay === day;
                 const hasClasses = scheduleItems.some(
-                  (item) => item.day.toLowerCase() === day.toLowerCase()
+                  (item) => item.day.toLowerCase() === day.toLowerCase(),
                 );
                 return (
                   <button
@@ -164,13 +184,19 @@ const SchedulePage = () => {
           <CardContent className="p-0">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-12">
-                <p className="text-sm text-muted-foreground animate-pulse">Loading schedule...</p>
+                <p className="text-sm text-muted-foreground animate-pulse">
+                  Loading schedule...
+                </p>
               </div>
             ) : activeDaySchedule.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed border-border/80 bg-muted/5">
                 <CalendarRange className="h-12 w-12 text-muted-foreground/40 stroke-[1.5] mb-3 animate-pulse" />
-                <p className="font-semibold text-foreground text-sm">No classes scheduled</p>
-                <p className="text-xs text-muted-foreground mt-1">Enjoy your day off!</p>
+                <p className="font-semibold text-foreground text-sm">
+                  No classes scheduled
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enjoy your day off!
+                </p>
               </div>
             ) : (
               <div className="relative border-l-2 border-primary/25 ml-4 pl-6 space-y-6 py-2">
@@ -185,8 +211,13 @@ const SchedulePage = () => {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 transition-all">
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="font-bold text-sm text-foreground">{item.className}</h4>
-                          <Badge variant="secondary" className="text-[10px] font-bold uppercase">
+                          <h4 className="font-bold text-sm text-foreground">
+                            {item.className}
+                          </h4>
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] font-bold uppercase"
+                          >
                             {item.subjectName}
                           </Badge>
                         </div>
@@ -207,7 +238,8 @@ const SchedulePage = () => {
                       <div className="flex items-center gap-1.5 self-start md:self-center text-xs font-bold text-primary bg-primary/10 border border-primary/20 rounded-md px-3 py-1">
                         <Clock className="h-3.5 w-3.5" />
                         <span>
-                          {formatTime12h(item.startTime)} - {formatTime12h(item.endTime)}
+                          {formatTime12h(item.startTime)} -{" "}
+                          {formatTime12h(item.endTime)}
                         </span>
                       </div>
                     </div>
