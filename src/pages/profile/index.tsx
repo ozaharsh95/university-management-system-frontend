@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,7 +25,10 @@ const ProfilePage = () => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [avatar, setAvatar] = useState<{ url: string; publicId: string } | null>(null);
+  const [avatar, setAvatar] = useState<{
+    url: string;
+    publicId: string;
+  } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -55,7 +64,9 @@ const ProfilePage = () => {
         updatePayload.imageCldPubId = "";
       }
 
-      const { data, error } = await authClient.updateUser(updatePayload) as any;
+      const { data, error } = (await authClient.updateUser(
+        updatePayload,
+      )) as any;
 
       if (error) {
         toast.error(error.message || "Failed to update profile.");
@@ -67,6 +78,8 @@ const ProfilePage = () => {
         localStorage.setItem("user", JSON.stringify(data.user));
         toast.success("Profile updated successfully!");
         refetch(); // Reload identity in Refine context
+      } else {
+        toast.error("Profile update returned no user data. Please try again.");
       }
     } catch (error: any) {
       toast.error(error.message || "An unexpected error occurred.");
@@ -76,7 +89,11 @@ const ProfilePage = () => {
   };
 
   const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
     : "?";
 
   return (
@@ -93,7 +110,9 @@ const ProfilePage = () => {
         <Card className="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col items-center text-center justify-center">
           <Avatar className="h-28 w-28 border-2 border-primary/20 shadow-md">
             <AvatarImage src={avatar?.url} alt={name} />
-            <AvatarFallback className="text-2xl font-bold">{initials}</AvatarFallback>
+            <AvatarFallback className="text-2xl font-bold">
+              {initials}
+            </AvatarFallback>
           </Avatar>
           <div className="mt-4 space-y-1.5">
             <h2 className="font-bold text-lg text-foreground">{user?.name}</h2>
@@ -109,7 +128,9 @@ const ProfilePage = () => {
         {/* Update Profile Form */}
         <Card className="lg:col-span-2 rounded-xl border border-border bg-card shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-bold">Account Information</CardTitle>
+            <CardTitle className="text-lg font-bold">
+              Account Information
+            </CardTitle>
             <CardDescription className="text-xs">
               Make changes to your display name, and avatar picture.
             </CardDescription>
