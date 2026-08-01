@@ -1,6 +1,6 @@
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useMemo } from "react";
 import { CreateButton } from "@/components/refine-ui/buttons/create";
@@ -8,8 +8,8 @@ import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { ClassDetails, Subject, User } from "@/types";
-import { useList } from "@refinedev/core";
+import { ClassDetails, Subject, User, UserRole } from "@/types";
+import { useList, useGetIdentity } from "@refinedev/core";
 import {
   Select,
   SelectContent,
@@ -18,7 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShowButton } from "@/components/refine-ui/buttons/show";
-const classesList = () => {
+
+const ClassesList = () => {
+  const { data: currentUser, isLoading: isIdentityLoading } =
+    useGetIdentity<User>();
+  const isTeacher = currentUser?.role === UserRole.TEACHER;
+  const isStudent = currentUser?.role === UserRole.STUDENT;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("all");
   const [selectedTeacher, setSelectedTeacher] = useState("all");
@@ -41,6 +47,9 @@ const classesList = () => {
     ],
     pagination: {
       pageSize: 100,
+    },
+    queryOptions: {
+      enabled: !!currentUser && !isStudent,
     },
   });
 
@@ -75,6 +84,26 @@ const classesList = () => {
   const searchFilters = searchQuery
     ? [{ field: "name", operator: "contains" as const, value: searchQuery }]
     : [];
+
+  const roleFilters = useMemo(() => {
+    if (!currentUser) return [];
+    const filters = [];
+    if (isTeacher && currentUser?.id) {
+      filters.push({
+        field: "teacherId",
+        operator: "eq" as const,
+        value: currentUser.id,
+      });
+    }
+    if (isStudent && currentUser?.id) {
+      filters.push({
+        field: "studentId",
+        operator: "eq" as const,
+        value: currentUser.id,
+      });
+    }
+    return filters;
+  }, [isTeacher, isStudent, currentUser]);
 
   const classesTable = useTable<ClassDetails>({
     columns: useMemo<ColumnDef<ClassDetails>[]>(
@@ -160,22 +189,44 @@ const classesList = () => {
         mode: "server",
       },
       filters: {
-        permanent: [...subjectFilters, ...teacherFilters, ...searchFilters],
+        permanent: [
+          ...subjectFilters,
+          ...teacherFilters,
+          ...searchFilters,
+          ...roleFilters,
+        ],
       },
       sorters: {
         initial: [{ field: "id", order: "desc" }],
       },
+      queryOptions: {
+        enabled: !!currentUser,
+      },
     },
   });
+
+  if (isIdentityLoading || !currentUser) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <ListView>
       <Breadcrumb />
 
-      <h1 className="page-title">Classes</h1>
+      <h1 className="page-title">
+        {isTeacher || isStudent ? "My Classes" : "Classes"}
+      </h1>
 
       <div className="intro-row">
-        <p>Quick access to essential metrics and management tools.</p>
+        <p>
+          {isTeacher || isStudent
+            ? "Quick access to your assigned classrooms, active schedules, and course resources."
+            : "Quick access to essential metrics and management tools."}
+        </p>
 
         <div className="actions-row">
           <div className="search-field">
@@ -191,44 +242,48 @@ const classesList = () => {
           </div>
 
           <div className="flex gap-2 w-full sm:w-auto">
-            <Select
-              value={selectedSubject}
-              onValueChange={setSelectedSubject}
-              disabled={subjectsLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by subject" />
-              </SelectTrigger>
+            {!isStudent && (
+              <Select
+                value={selectedSubject}
+                onValueChange={setSelectedSubject}
+                disabled={subjectsLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by subject" />
+                </SelectTrigger>
 
-              <SelectContent>
-                <SelectItem value="all">All Subjects</SelectItem>
-                {subjectsData.map((subject) => (
-                  <SelectItem key={subject.id} value={subject.name}>
-                    {subject.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectContent>
+                  <SelectItem value="all">All Subjects</SelectItem>
+                  {subjectsData.map((subject) => (
+                    <SelectItem key={subject.id} value={subject.name}>
+                      {subject.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
-            <Select
-              value={selectedTeacher}
-              onValueChange={setSelectedTeacher}
-              disabled={teachersLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by teacher" />
-              </SelectTrigger>
+            {!isTeacher && !isStudent && (
+              <Select
+                value={selectedTeacher}
+                onValueChange={setSelectedTeacher}
+                disabled={teachersLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by teacher" />
+                </SelectTrigger>
 
-              <SelectContent>
-                <SelectItem value="all">All Teachers</SelectItem>
-                {teachersData.map((teacher) => (
-                  <SelectItem key={teacher.id} value={teacher.name}>
-                    {teacher.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <CreateButton />
+                <SelectContent>
+                  <SelectItem value="all">All Teachers</SelectItem>
+                  {teachersData.map((teacher) => (
+                    <SelectItem key={teacher.id} value={teacher.name}>
+                      {teacher.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {!isTeacher && !isStudent && <CreateButton />}
           </div>
         </div>
       </div>
@@ -238,4 +293,4 @@ const classesList = () => {
   );
 };
 
-export default classesList;
+export default ClassesList;

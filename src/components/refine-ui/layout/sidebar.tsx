@@ -18,6 +18,7 @@ import {
   SidebarHeader as ShadcnSidebarHeader,
   SidebarRail as ShadcnSidebarRail,
   SidebarTrigger as ShadcnSidebarTrigger,
+  SidebarFooter as ShadcnSidebarFooter,
   useSidebar as useShadcnSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
@@ -31,18 +32,51 @@ import {
 import { ChevronRight, ListIcon } from "lucide-react";
 import React from "react";
 import { User, UserRole } from "@/types";
+import { RESOURCE_ROLES } from "@/constants";
 
 export function Sidebar() {
   const { open } = useShadcnSidebar();
   const { menuItems, selectedKey } = useMenu();
-  const { data: currentUser } = useGetIdentity<User>();
+  const { data: currentUser, isLoading } = useGetIdentity<User>();
 
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (item.name === "users" && currentUser?.role !== UserRole.ADMIN) {
-      return false;
-    }
-    return true;
-  });
+  if (isLoading) {
+    return null;
+  }
+
+  const filteredMenuItems = menuItems
+    .filter((item) => {
+      const role = currentUser?.role;
+      if (!role) return false;
+      return RESOURCE_ROLES[item.name]?.includes(role) ?? false;
+    })
+    .map((item) => {
+      const role = currentUser?.role;
+      if (
+        item.name === "classes" &&
+        (role === UserRole.TEACHER || role === UserRole.STUDENT)
+      ) {
+        return {
+          ...item,
+          meta: { ...item.meta, label: "My Classes" },
+          label: "My Classes",
+        };
+      }
+      if (item.name === "users" && role === UserRole.TEACHER) {
+        return {
+          ...item,
+          meta: { ...item.meta, label: "Students" },
+          label: "Students",
+        };
+      }
+      return item;
+    });
+
+  const mainMenuItems = filteredMenuItems.filter(
+    (item) => item.name !== "profile",
+  );
+  const profileMenuItem = filteredMenuItems.find(
+    (item) => item.name === "profile",
+  );
 
   return (
     <ShadcnSidebar collapsible="icon" className={cn("border-none")}>
@@ -62,10 +96,10 @@ export function Sidebar() {
           {
             "px-3": open,
             "px-1": !open,
-          }
+          },
         )}
       >
-        {filteredMenuItems.map((item: TreeMenuItem) => (
+        {mainMenuItems.map((item: TreeMenuItem) => (
           <SidebarItem
             key={item.key || item.name}
             item={item}
@@ -73,6 +107,31 @@ export function Sidebar() {
           />
         ))}
       </ShadcnSidebarContent>
+      {profileMenuItem && (
+        <ShadcnSidebarFooter
+          className={cn(
+            "transition-discrete",
+            "duration-200",
+            "flex",
+            "flex-col",
+            "gap-2",
+            "pt-2",
+            "pb-2",
+            "border-r",
+            "border-border",
+            {
+              "px-3": open,
+              "px-1": !open,
+            },
+          )}
+        >
+          <SidebarItem
+            key={profileMenuItem.key || profileMenuItem.name}
+            item={profileMenuItem}
+            selectedKey={selectedKey}
+          />
+        </ShadcnSidebarFooter>
+      )}
     </ShadcnSidebar>
   );
 }
@@ -122,7 +181,7 @@ function SidebarItemGroup({ item, selectedKey }: MenuItemProps) {
             "opacity-100": open,
             "pointer-events-none": !open,
             "pointer-events-auto": open,
-          }
+          },
         )}
       >
         {getDisplayName(item)}
@@ -154,7 +213,7 @@ function SidebarItemCollapsible({ item, selectedKey }: MenuItemProps) {
         "text-muted-foreground",
         "transition-transform",
         "duration-200",
-        "group-data-[state=open]:rotate-90"
+        "group-data-[state=open]:rotate-90",
       )}
     />
   );
@@ -233,7 +292,7 @@ function SidebarHeader() {
         "flex-row",
         "items-center",
         "justify-between",
-        "overflow-hidden"
+        "overflow-hidden",
       )}
     >
       <div
@@ -250,7 +309,7 @@ function SidebarHeader() {
           {
             "pl-3": !open,
             "pl-5": open,
-          }
+          },
         )}
       >
         <div>{title.icon}</div>
@@ -263,7 +322,7 @@ function SidebarHeader() {
             {
               "opacity-0": !open,
               "opacity-100": open,
-            }
+            },
           )}
         >
           {title.text}
@@ -357,7 +416,7 @@ function SidebarButton({
           "text-sidebar-primary-foreground": isSelected,
           "hover:text-sidebar-primary-foreground": isSelected,
         },
-        className
+        className,
       )}
       onClick={onClick}
       {...props}

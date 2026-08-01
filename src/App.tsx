@@ -1,7 +1,7 @@
 import { Authenticated, Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-import { BookOpen, GraduationCap, Home, Users, Megaphone } from "lucide-react";
+import { BookOpen, GraduationCap, Home, Users, Megaphone, Building2, ClipboardList, Calendar, UserRound, BarChart3, UserPlus } from "lucide-react";
 import routerProvider, {
   DocumentTitleHandler,
   NavigateToResource,
@@ -23,8 +23,18 @@ import ClassesCreate from "./pages/classes/create";
 import ClassesShow from "./pages/classes/show";
 import UsersList from "./pages/users/list";
 import AnnouncementsList from "./pages/announcements/list";
+import DepartmentsList from "./pages/departments/list";
+import EnrollmentsList from "./pages/enrollments/list";
+import JoinClassPage from "./pages/join-class/index";
+import SchedulePage from "./pages/schedule/index";
+import ProfilePage from "./pages/profile/index";
+import ReportsPage from "./pages/reports/index";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+import { UserRole } from "./types";
+import { RequireRole } from "./components/require-role";
+import { RESOURCE_ROLES } from "./constants";
+
 
 function App() {
   return (
@@ -86,6 +96,54 @@ function App() {
                     icon: <Megaphone />,
                   },
                 },
+                {
+                  name: "departments",
+                  list: "/departments",
+                  meta: {
+                    label: "Departments",
+                    icon: <Building2 />,
+                  },
+                },
+                {
+                  name: "enrollments",
+                  list: "/enrollments",
+                  meta: {
+                    label: "Enrollments",
+                    icon: <ClipboardList />,
+                  },
+                },
+                {
+                  name: "join-class",
+                  list: "/join-class",
+                  meta: {
+                    label: "Join Class",
+                    icon: <UserPlus />,
+                  },
+                },
+                {
+                  name: "schedule",
+                  list: "/schedule",
+                  meta: {
+                    label: "Schedule",
+                    icon: <Calendar />,
+                  },
+                },
+                {
+                  name: "profile",
+                  list: "/profile",
+                  meta: {
+                    label: "Profile",
+                    icon: <UserRound />,
+                  },
+                },
+                {
+                  name: "reports",
+                  list: "/reports",
+                  meta: {
+                    label: "Reports",
+                    icon: <BarChart3 />,
+                  },
+                },
               ]}
             >
               <Routes>
@@ -109,21 +167,45 @@ function App() {
                   }
                 >
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="subjects">
-                    <Route index element={<SubjectsList />} />
-                    <Route path="create" element={<SubjectsCreate />} />
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.subjects} />}>
+                    <Route path="subjects">
+                      <Route index element={<SubjectsList />} />
+                      <Route path="create" element={<SubjectsCreate />} />
+                    </Route>
                   </Route>
                   <Route path="classes">
                     <Route index element={<ClassesList />} />
                     <Route path="create" element={<ClassesCreate />} />
                     <Route path="show/:id" element={<ClassesShow />} />
                   </Route>
-                  <Route path="users">
-                    <Route index element={<UsersList />} />
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.users} />}>
+                    <Route path="users">
+                      <Route index element={<UsersList />} />
+                    </Route>
                   </Route>
                   <Route path="announcements">
                     <Route index element={<AnnouncementsList />} />
                   </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.departments} />}>
+                    <Route path="departments">
+                      <Route index element={<DepartmentsList />} />
+                    </Route>
+                  </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.enrollments} />}>
+                    <Route path="enrollments">
+                      <Route index element={<EnrollmentsList />} />
+                    </Route>
+                  </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.reports} />}>
+                    <Route path="reports" element={<ReportsPage />} />
+                  </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES["join-class"]} />}>
+                    <Route path="join-class" element={<JoinClassPage />} />
+                  </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.schedule} />}>
+                    <Route path="schedule" element={<SchedulePage />} />
+                  </Route>
+                  <Route path="profile" element={<ProfilePage />} />
                 </Route>
               </Routes>
               <Toaster />

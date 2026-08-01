@@ -1,8 +1,9 @@
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Search, Edit, ShieldAlert } from "lucide-react";
+import { Search, Edit, ShieldAlert, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
+import { Navigate } from "react-router";
 import {
   Select,
   SelectContent,
@@ -24,11 +25,15 @@ import {
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { useTable } from "@refinedev/react-table";
-import { useUpdate, useNotification } from "@refinedev/core";
+import { useUpdate, useNotification, useGetIdentity } from "@refinedev/core";
 import { User, UserRole } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 
 const UsersList = () => {
+  const { data: currentUser, isLoading: isIdentityLoading } = useGetIdentity<User>();
+  const isTeacher = currentUser?.role === UserRole.TEACHER;
+  const isAdmin = currentUser?.role === UserRole.ADMIN;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -39,8 +44,15 @@ const UsersList = () => {
   const isUpdating = updateMutation.isPending;
 
   const activeFilters = useMemo(() => {
+    if (!currentUser) return [];
     const filters = [];
-    if (roleFilter !== "all") {
+    if (isTeacher) {
+      filters.push({
+        field: "role",
+        operator: "eq" as const,
+        value: "student",
+      });
+    } else if (roleFilter !== "all") {
       filters.push({
         field: "role",
         operator: "eq" as const,
@@ -55,7 +67,7 @@ const UsersList = () => {
       });
     }
     return filters;
-  }, [roleFilter, searchQuery]);
+  }, [roleFilter, searchQuery, isTeacher, currentUser]);
 
   const userTable = useTable<User>({
     columns: useMemo<ColumnDef<User>[]>(
@@ -64,13 +76,13 @@ const UsersList = () => {
           id: "avatar",
           size: 70,
           header: () => <p className="column-title ml-2">Avatar</p>,
-          cell: ({ row }) => {
+          cell: ({ row }: any) => {
             const name = row.original.name || "User";
             const initials = name
               .split(" ")
               .filter(Boolean)
               .slice(0, 2)
-              .map((part) => part[0]?.toUpperCase())
+              .map((part: string) => part[0]?.toUpperCase())
               .join("");
             return (
               <Avatar className="h-9 w-9 ml-2 border border-border">
@@ -87,8 +99,8 @@ const UsersList = () => {
           accessorKey: "name",
           size: 200,
           header: () => <p className="column-title">Name</p>,
-          cell: ({ getValue }) => (
-            <span className="font-medium text-foreground">{getValue<string>()}</span>
+          cell: ({ getValue }: any) => (
+            <span className="font-medium text-foreground">{(getValue() as string)}</span>
           ),
         },
         {
@@ -96,8 +108,8 @@ const UsersList = () => {
           accessorKey: "email",
           size: 220,
           header: () => <p className="column-title">Email Address</p>,
-          cell: ({ getValue }) => (
-            <span className="text-muted-foreground">{getValue<string>()}</span>
+          cell: ({ getValue }: any) => (
+            <span className="text-muted-foreground">{(getValue() as string)}</span>
           ),
         },
         {
@@ -105,8 +117,8 @@ const UsersList = () => {
           accessorKey: "role",
           size: 130,
           header: () => <p className="column-title">Role</p>,
-          cell: ({ getValue }) => {
-            const role = getValue<UserRole>();
+          cell: ({ getValue }: any) => {
+            const role = getValue() as UserRole;
             let variant: "default" | "secondary" | "destructive" | "outline" = "secondary";
             if (role === UserRole.ADMIN) {
               variant = "destructive";
@@ -125,8 +137,8 @@ const UsersList = () => {
           accessorKey: "createdAt",
           size: 150,
           header: () => <p className="column-title">Joined On</p>,
-          cell: ({ getValue }) => {
-            const dateStr = getValue<string>();
+          cell: ({ getValue }: any) => {
+            const dateStr = getValue() as string;
             if (!dateStr) return "-";
             const formatted = new Date(dateStr).toLocaleDateString(undefined, {
               year: "numeric",
@@ -140,7 +152,7 @@ const UsersList = () => {
           id: "actions",
           size: 100,
           header: () => <p className="column-title text-center">Actions</p>,
-          cell: ({ row }) => (
+          cell: ({ row }: any) => (
             <div className="flex justify-center">
               <Button
                 variant="ghost"
@@ -160,8 +172,13 @@ const UsersList = () => {
             </div>
           ),
         },
-      ],
-      [],
+      ].filter((col) => {
+        if (col.id === "actions") {
+          return isAdmin;
+        }
+        return true;
+      }),
+      [isAdmin],
     ),
     refineCoreProps: {
       resource: "users",
@@ -175,12 +192,15 @@ const UsersList = () => {
       sorters: {
         initial: [{ field: "id", order: "desc" }],
       },
+      queryOptions: {
+        enabled: !!currentUser && (currentUser.role === UserRole.ADMIN || currentUser.role === UserRole.TEACHER),
+      },
     },
   });
 
   const handleSaveChanges = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingUser) return;
+    if (!editingUser || !isAdmin) return;
 
     updateMutate(
       {
@@ -213,17 +233,29 @@ const UsersList = () => {
     );
   };
 
+  if (isIdentityLoading || !currentUser) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (currentUser.role === UserRole.STUDENT) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <ListView>
       <Breadcrumb />
 
       <h1 className="page-title flex items-center gap-2">
-        <span>Users Management</span>
-        <Badge variant="outline" className="font-mono text-[10px]">ADMIN PANEL</Badge>
+        <span>{isTeacher ? "Students Directory" : "Users Management"}</span>
+        {isAdmin && <Badge variant="outline" className="font-mono text-[10px]">ADMIN PANEL</Badge>}
       </h1>
 
       <div className="intro-row">
-        <p>View registered student and teacher profiles, search users, and manage account roles.</p>
+        <p>{isTeacher ? "View and search the directory of all registered students in the system." : "View registered student and teacher profiles, search users, and manage account roles."}</p>
 
         <div className="actions-row">
           <div className="search-field">
@@ -237,26 +269,28 @@ const UsersList = () => {
             />
           </div>
 
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="All Roles" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                <SelectItem value={UserRole.TEACHER}>Teacher</SelectItem>
-                <SelectItem value={UserRole.STUDENT}>Student</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {isAdmin && (
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="All Roles" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                  <SelectItem value={UserRole.TEACHER}>Teacher</SelectItem>
+                  <SelectItem value={UserRole.STUDENT}>Student</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </div>
 
       <DataTable table={userTable} />
 
       {/* Edit User Modal Dialog */}
-      <Dialog open={editingUser !== null} onOpenChange={(open) => !open && setEditingUser(null)}>
+      <Dialog open={editingUser !== null && isAdmin} onOpenChange={(open) => !open && setEditingUser(null)}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit User Profile</DialogTitle>

@@ -1,4 +1,5 @@
 import { GraduationCap, School } from "lucide-react";
+import { UserRole } from "@/types";
 
 export const USER_ROLES = {
   STUDENT: "student",
@@ -75,3 +76,17 @@ export const REFRESH_TOKEN_URL = `${BASE_URL}/refresh-token`;
 
 export const CLOUDINARY_UPLOAD_PRESET = import.meta.env
   .VITE_CLOUDINARY_UPLOAD_PRESET;
+
+export const RESOURCE_ROLES: Record<string, UserRole[]> = {
+  dashboard: [UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT],
+  profile: [UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT],
+  announcements: [UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT],
+  classes: [UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT],
+  users: [UserRole.ADMIN, UserRole.TEACHER],
+  schedule: [UserRole.TEACHER, UserRole.STUDENT],
+  "join-class": [UserRole.STUDENT],
+  subjects: [UserRole.ADMIN],
+  departments: [UserRole.ADMIN],
+  enrollments: [UserRole.ADMIN],
+  reports: [UserRole.ADMIN],
+};
