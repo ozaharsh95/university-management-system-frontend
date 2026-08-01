@@ -24,8 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreate, useDelete, useList } from "@refinedev/core";
+import { useCreate, useDelete, useList, useSelect } from "@refinedev/core";
 import { User } from "@/types";
+import { Input } from "@/components/ui/input";
 
 type EnrollmentRecord = {
   id: number;
@@ -49,14 +50,22 @@ const EnrollmentsList = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
+  const [studentSearch, setStudentSearch] = useState("");
+  const [classSearch, setClassSearch] = useState("");
 
   const { mutate: createMutate, mutation: createMutation } = useCreate();
   const isSubmitting = createMutation.isPending;
   const { mutate: deleteMutate } = useDelete();
 
   // Load students list for the dropdown
-  const { query: studentsQuery } = useList<User>({
+  const {
+    options: studentOptions,
+    query: studentsQuery,
+    onSearch: onSearchStudents,
+  } = useSelect<User>({
     resource: "users",
+    optionLabel: (item) => `${item.name} (${item.email})`,
+    optionValue: (item) => item.id,
     filters: [
       {
         field: "role",
@@ -64,22 +73,36 @@ const EnrollmentsList = () => {
         value: "student",
       },
     ],
-    pagination: {
-      pageSize: 100,
-    },
+    onSearch: (value) => [
+      {
+        field: "search",
+        operator: "contains",
+        value,
+      },
+    ],
+    debounce: 300,
   });
 
   // Load classes list for the dropdown
-  const { query: classesQuery } = useList<any>({
+  const {
+    options: classOptions,
+    query: classesQuery,
+    onSearch: onSearchClasses,
+  } = useSelect<any>({
     resource: "classes",
-    pagination: {
-      pageSize: 100,
-    },
+    optionLabel: (item) => `${item.name} (Code: ${item.inviteCode})`,
+    optionValue: (item) => String(item.id),
+    onSearch: (value) => [
+      {
+        field: "name",
+        operator: "contains",
+        value,
+      },
+    ],
+    debounce: 300,
   });
 
-  const studentsList = studentsQuery?.data?.data || [];
   const isStudentsLoading = studentsQuery?.isLoading;
-  const classesList = classesQuery?.data?.data || [];
   const isClassesLoading = classesQuery?.isLoading;
 
   const enrollmentTable = useTable<EnrollmentRecord>({
@@ -207,6 +230,10 @@ const EnrollmentsList = () => {
   const handleOpenCreate = () => {
     setSelectedStudent("");
     setSelectedClass("");
+    setStudentSearch("");
+    setClassSearch("");
+    onSearchStudents("");
+    onSearchClasses("");
     setIsCreateOpen(true);
   };
 
@@ -293,14 +320,31 @@ const EnrollmentsList = () => {
                     <SelectValue placeholder="Choose a student" />
                   </SelectTrigger>
                   <SelectContent>
+                    <div className="p-2 sticky top-0 bg-popover z-10 border-b">
+                      <Input
+                        placeholder="Search student..."
+                        className="h-8 w-full"
+                        value={studentSearch}
+                        onChange={(e) => {
+                          setStudentSearch(e.target.value);
+                          onSearchStudents(e.target.value);
+                        }}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}
+                      />
+                    </div>
                     {isStudentsLoading ? (
                       <SelectItem value="loading" disabled>
                         Loading students...
                       </SelectItem>
+                    ) : studentOptions.length === 0 ? (
+                      <SelectItem value="no-results" disabled>
+                        No students found
+                      </SelectItem>
                     ) : (
-                      studentsList.map((student: User) => (
-                        <SelectItem key={student.id} value={student.id}>
-                          {student.name} ({student.email})
+                      studentOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={String(opt.value)}>
+                          {opt.label}
                         </SelectItem>
                       ))
                     )}
@@ -317,14 +361,31 @@ const EnrollmentsList = () => {
                     <SelectValue placeholder="Choose a class" />
                   </SelectTrigger>
                   <SelectContent>
+                    <div className="p-2 sticky top-0 bg-popover z-10 border-b">
+                      <Input
+                        placeholder="Search class..."
+                        className="h-8 w-full"
+                        value={classSearch}
+                        onChange={(e) => {
+                          setClassSearch(e.target.value);
+                          onSearchClasses(e.target.value);
+                        }}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}
+                      />
+                    </div>
                     {isClassesLoading ? (
                       <SelectItem value="loading" disabled>
                         Loading classes...
                       </SelectItem>
+                    ) : classOptions.length === 0 ? (
+                      <SelectItem value="no-results" disabled>
+                        No classes found
+                      </SelectItem>
                     ) : (
-                      classesList.map((cls: any) => (
-                        <SelectItem key={cls.id} value={String(cls.id)}>
-                          {cls.name} (Code: {cls.inviteCode})
+                      classOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={String(opt.value)}>
+                          {opt.label}
                         </SelectItem>
                       ))
                     )}
