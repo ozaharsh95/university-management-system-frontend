@@ -167,9 +167,11 @@ function App() {
                   }
                 >
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="subjects">
-                    <Route index element={<SubjectsList />} />
-                    <Route path="create" element={<SubjectsCreate />} />
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.subjects} />}>
+                    <Route path="subjects">
+                      <Route index element={<SubjectsList />} />
+                      <Route path="create" element={<SubjectsCreate />} />
+                    </Route>
                   </Route>
                   <Route path="classes">
                     <Route index element={<ClassesList />} />
@@ -188,13 +190,21 @@ function App() {
                     <Route path="departments">
                       <Route index element={<DepartmentsList />} />
                     </Route>
+                  </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.enrollments} />}>
                     <Route path="enrollments">
                       <Route index element={<EnrollmentsList />} />
                     </Route>
+                  </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.reports} />}>
                     <Route path="reports" element={<ReportsPage />} />
                   </Route>
-                  <Route path="join-class" element={<JoinClassPage />} />
-                  <Route path="schedule" element={<SchedulePage />} />
+                  <Route element={<RequireRole roles={RESOURCE_ROLES["join-class"]} />}>
+                    <Route path="join-class" element={<JoinClassPage />} />
+                  </Route>
+                  <Route element={<RequireRole roles={RESOURCE_ROLES.schedule} />}>
+                    <Route path="schedule" element={<SchedulePage />} />
+                  </Route>
                   <Route path="profile" element={<ProfilePage />} />
                 </Route>
               </Routes>
