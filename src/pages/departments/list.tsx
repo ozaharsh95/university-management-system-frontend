@@ -23,7 +23,7 @@ import { useCreate, useUpdate, useDelete } from "@refinedev/core";
 
 const DepartmentsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Dialog States
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -52,7 +52,11 @@ const DepartmentsList = () => {
           accessorKey: "code",
           size: 120,
           header: () => <p className="column-title ml-2 font-bold">Code</p>,
-          cell: ({ getValue }) => <Badge variant="outline" className="font-semibold">{getValue<string>()}</Badge>,
+          cell: ({ getValue }) => (
+            <Badge variant="outline" className="font-semibold">
+              {getValue<string>()}
+            </Badge>
+          ),
         },
         {
           id: "name",
@@ -60,16 +64,22 @@ const DepartmentsList = () => {
           size: 250,
           header: () => <p className="column-title ml-2 font-bold">Name</p>,
           cell: ({ getValue }) => (
-            <span className="font-medium text-foreground">{getValue<string>()}</span>
+            <span className="font-medium text-foreground">
+              {getValue<string>()}
+            </span>
           ),
         },
         {
           id: "description",
           accessorKey: "description",
           size: 350,
-          header: () => <p className="column-title ml-2 font-bold">Description</p>,
+          header: () => (
+            <p className="column-title ml-2 font-bold">Description</p>
+          ),
           cell: ({ getValue }) => (
-            <span className="truncate block max-w-xs text-muted-foreground">{getValue<string>() || "N/A"}</span>
+            <span className="truncate block max-w-xs text-muted-foreground">
+              {getValue<string>() || "N/A"}
+            </span>
           ),
         },
         {
@@ -85,6 +95,7 @@ const DepartmentsList = () => {
                   size="icon"
                   className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
                   onClick={() => handleOpenEdit(dept)}
+                  aria-label={`Edit ${dept.name} department`}
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
@@ -93,6 +104,7 @@ const DepartmentsList = () => {
                   size="icon"
                   className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                   onClick={() => handleDelete(dept.id)}
+                  aria-label={`Delete ${dept.name} department`}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -101,7 +113,7 @@ const DepartmentsList = () => {
           },
         },
       ],
-      []
+      [],
     ),
     refineCoreProps: {
       resource: "departments",
@@ -147,7 +159,7 @@ const DepartmentsList = () => {
           setIsCreateOpen(false);
           deptTable.refineCore.tableQuery.refetch();
         },
-      }
+      },
     );
   };
 
@@ -166,12 +178,16 @@ const DepartmentsList = () => {
           setIsEditOpen(false);
           deptTable.refineCore.tableQuery.refetch();
         },
-      }
+      },
     );
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this department? This cannot be undone.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this department? This cannot be undone.",
+      )
+    ) {
       deleteMutate(
         {
           resource: "departments",
@@ -181,7 +197,7 @@ const DepartmentsList = () => {
           onSuccess: () => {
             deptTable.refineCore.tableQuery.refetch();
           },
-        }
+        },
       );
     }
   };
@@ -208,6 +224,7 @@ const DepartmentsList = () => {
             <Search className="search-icon" />
             <Input
               type="text"
+              aria-label="Search departments..."
               placeholder="Search departments..."
               className="pl-10 w-full"
               value={searchQuery}
@@ -272,7 +289,11 @@ const DepartmentsList = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateOpen(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isCreating}>
@@ -334,7 +355,11 @@ const DepartmentsList = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsEditOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditOpen(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isUpdating}>

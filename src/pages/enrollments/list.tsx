@@ -92,9 +92,14 @@ const EnrollmentsList = () => {
           header: () => <p className="column-title ml-2 font-bold">Student</p>,
           cell: ({ getValue }) => {
             const student = getValue<EnrollmentRecord["student"]>();
-            if (!student) return <span className="text-muted-foreground">N/A</span>;
+            if (!student)
+              return <span className="text-muted-foreground">N/A</span>;
             const initials = student.name
-              ? student.name.split(" ").map((n) => n[0]).join("").toUpperCase()
+              ? student.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()
               : "?";
             return (
               <div className="flex items-center gap-3">
@@ -103,8 +108,12 @@ const EnrollmentsList = () => {
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-foreground">{student.name}</span>
-                  <span className="text-xs text-muted-foreground">{student.email}</span>
+                  <span className="font-semibold text-foreground">
+                    {student.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {student.email}
+                  </span>
                 </div>
               </div>
             );
@@ -118,7 +127,9 @@ const EnrollmentsList = () => {
           cell: ({ getValue }) => (
             <div className="flex items-center gap-2">
               <GraduationCap className="h-4 w-4 text-primary" />
-              <span className="font-medium text-foreground">{getValue<string>()}</span>
+              <span className="font-medium text-foreground">
+                {getValue<string>()}
+              </span>
             </div>
           ),
         },
@@ -126,9 +137,14 @@ const EnrollmentsList = () => {
           id: "inviteCode",
           accessorKey: "class.inviteCode",
           size: 150,
-          header: () => <p className="column-title ml-2 font-bold">Invite Code</p>,
+          header: () => (
+            <p className="column-title ml-2 font-bold">Invite Code</p>
+          ),
           cell: ({ getValue }) => (
-            <Badge variant="secondary" className="font-mono text-xs uppercase tracking-wider">
+            <Badge
+              variant="secondary"
+              className="font-mono text-xs uppercase tracking-wider"
+            >
               {getValue<string>()}
             </Badge>
           ),
@@ -137,14 +153,18 @@ const EnrollmentsList = () => {
           id: "createdAt",
           accessorKey: "createdAt",
           size: 180,
-          header: () => <p className="column-title ml-2 font-bold">Enrolled On</p>,
+          header: () => (
+            <p className="column-title ml-2 font-bold">Enrolled On</p>
+          ),
           cell: ({ getValue }) => {
             const val = getValue<string>();
-            const dateStr = val ? new Date(val).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric"
-            }) : "N/A";
+            const dateStr = val
+              ? new Date(val).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "N/A";
             return (
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Calendar className="h-4 w-4" />
@@ -163,13 +183,14 @@ const EnrollmentsList = () => {
               size="icon"
               className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
               onClick={() => handleUnenroll(row.original.id)}
+              aria-label={`Unenroll ${row.original.student?.name ?? "student"}`}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           ),
         },
       ],
-      []
+      [],
     ),
     refineCoreProps: {
       resource: "enrollments",
@@ -206,12 +227,14 @@ const EnrollmentsList = () => {
           setIsCreateOpen(false);
           enrollmentTable.refineCore.tableQuery.refetch();
         },
-      }
+      },
     );
   };
 
   const handleUnenroll = (id: number) => {
-    if (confirm("Are you sure you want to unenroll this student from the class?")) {
+    if (
+      confirm("Are you sure you want to unenroll this student from the class?")
+    ) {
       deleteMutate(
         {
           resource: "enrollments",
@@ -221,7 +244,7 @@ const EnrollmentsList = () => {
           onSuccess: () => {
             enrollmentTable.refineCore.tableQuery.refetch();
           },
-        }
+        },
       );
     }
   };
@@ -262,13 +285,18 @@ const EnrollmentsList = () => {
                 <Label htmlFor="student" className="font-semibold">
                   Select Student
                 </Label>
-                <Select value={selectedStudent} onValueChange={setSelectedStudent}>
+                <Select
+                  value={selectedStudent}
+                  onValueChange={setSelectedStudent}
+                >
                   <SelectTrigger id="student" className="w-full">
                     <SelectValue placeholder="Choose a student" />
                   </SelectTrigger>
                   <SelectContent>
                     {isStudentsLoading ? (
-                      <SelectItem value="loading" disabled>Loading students...</SelectItem>
+                      <SelectItem value="loading" disabled>
+                        Loading students...
+                      </SelectItem>
                     ) : (
                       studentsList.map((student: User) => (
                         <SelectItem key={student.id} value={student.id}>
@@ -290,7 +318,9 @@ const EnrollmentsList = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {isClassesLoading ? (
-                      <SelectItem value="loading" disabled>Loading classes...</SelectItem>
+                      <SelectItem value="loading" disabled>
+                        Loading classes...
+                      </SelectItem>
                     ) : (
                       classesList.map((cls: any) => (
                         <SelectItem key={cls.id} value={String(cls.id)}>
@@ -304,10 +334,17 @@ const EnrollmentsList = () => {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting || !selectedStudent || !selectedClass}>
+              <Button
+                type="submit"
+                disabled={isSubmitting || !selectedStudent || !selectedClass}
+              >
                 {isSubmitting ? "Enrolling..." : "Enroll"}
               </Button>
             </DialogFooter>
