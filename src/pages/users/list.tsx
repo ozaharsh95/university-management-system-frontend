@@ -3,6 +3,7 @@ import { ListView } from "@/components/refine-ui/views/list-view";
 import { Search, Edit, ShieldAlert, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
+import { Navigate } from "react-router";
 import {
   Select,
   SelectContent,
@@ -31,6 +32,7 @@ import { ColumnDef } from "@tanstack/react-table";
 const UsersList = () => {
   const { data: currentUser, isLoading: isIdentityLoading } = useGetIdentity<User>();
   const isTeacher = currentUser?.role === UserRole.TEACHER;
+  const isAdmin = currentUser?.role === UserRole.ADMIN;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -171,10 +173,12 @@ const UsersList = () => {
           ),
         },
       ].filter((col) => {
-        if (isTeacher && col.id === "actions") return false;
+        if (col.id === "actions") {
+          return isAdmin;
+        }
         return true;
       }),
-      [isTeacher],
+      [isAdmin],
     ),
     refineCoreProps: {
       resource: "users",
@@ -189,14 +193,14 @@ const UsersList = () => {
         initial: [{ field: "id", order: "desc" }],
       },
       queryOptions: {
-        enabled: !!currentUser,
+        enabled: !!currentUser && (currentUser.role === UserRole.ADMIN || currentUser.role === UserRole.TEACHER),
       },
     },
   });
 
   const handleSaveChanges = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingUser) return;
+    if (!editingUser || !isAdmin) return;
 
     updateMutate(
       {
@@ -237,13 +241,17 @@ const UsersList = () => {
     );
   }
 
+  if (currentUser.role === UserRole.STUDENT) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <ListView>
       <Breadcrumb />
 
       <h1 className="page-title flex items-center gap-2">
         <span>{isTeacher ? "Students Directory" : "Users Management"}</span>
-        {!isTeacher && <Badge variant="outline" className="font-mono text-[10px]">ADMIN PANEL</Badge>}
+        {isAdmin && <Badge variant="outline" className="font-mono text-[10px]">ADMIN PANEL</Badge>}
       </h1>
 
       <div className="intro-row">
@@ -261,7 +269,7 @@ const UsersList = () => {
             />
           </div>
 
-          {!isTeacher && (
+          {isAdmin && (
             <div className="flex gap-2 w-full sm:w-auto">
               <Select value={roleFilter} onValueChange={setRoleFilter}>
                 <SelectTrigger className="w-[150px]">
@@ -282,7 +290,7 @@ const UsersList = () => {
       <DataTable table={userTable} />
 
       {/* Edit User Modal Dialog */}
-      <Dialog open={editingUser !== null} onOpenChange={(open) => !open && setEditingUser(null)}>
+      <Dialog open={editingUser !== null && isAdmin} onOpenChange={(open) => !open && setEditingUser(null)}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit User Profile</DialogTitle>

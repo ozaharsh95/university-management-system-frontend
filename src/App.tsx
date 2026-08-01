@@ -175,8 +175,10 @@ function App() {
                     <Route path="create" element={<ClassesCreate />} />
                     <Route path="show/:id" element={<ClassesShow />} />
                   </Route>
-                  <Route path="users">
-                    <Route index element={<UsersList />} />
+                  <Route element={<RequireRole roles={[UserRole.ADMIN, UserRole.TEACHER]} />}>
+                    <Route path="users">
+                      <Route index element={<UsersList />} />
+                    </Route>
                   </Route>
                   <Route path="announcements">
                     <Route index element={<AnnouncementsList />} />
