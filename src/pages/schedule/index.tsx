@@ -53,7 +53,7 @@ const SchedulePage = () => {
 
   // Fetch student schedule data
   const { query: studentQuery } = useCustom<any>({
-    url: `${BACKEND_BASE_URL}stats/student/charts`,
+    url: `${BACKEND_BASE_URL}/stats/student/charts`,
     method: "get",
     queryOptions: {
       enabled: role === UserRole.STUDENT,
@@ -62,7 +62,7 @@ const SchedulePage = () => {
 
   // Fetch classes for teacher / admin
   const { query: classesQuery } = useCustom<any>({
-    url: `${BACKEND_BASE_URL}classes`,
+    url: `${BACKEND_BASE_URL}/classes`,
     method: "get",
     config: {
       query:
