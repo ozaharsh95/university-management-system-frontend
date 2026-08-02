@@ -5,7 +5,8 @@ EduHub is a premium, full-featured **University Management System** client appli
 > [!NOTE]
 > This repository contains the client-side (frontend) implementation of EduHub. It is built to seamlessly interface with the EduHub Backend API to handle role-based navigation, live telemetry dashboards, course enrollments, class management, and Cloudinary image uploads.
 
-> [!Backend Repository Link] > [Check out the Backend API repository here](https://github.com/TirthMistry18/university-management-system-backend)
+> [!Backend Repository Link] 
+> [Check out the Backend API repository here](https://github.com/TirthMistry18/university-management-system-backend)
 
 ---
 
