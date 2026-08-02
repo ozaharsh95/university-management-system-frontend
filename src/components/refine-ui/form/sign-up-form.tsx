@@ -1,5 +1,6 @@
 "use client";
 import { InputPassword } from "@/components/refine-ui/form/input-password";
+import { Mail, Lock, User, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -120,89 +121,109 @@ export const SignUpForm = () => {
   return (
     <div
       className={cn(
+        "sign-up",
+        "relative",
         "flex",
         "flex-col",
         "items-center",
         "justify-center",
         "px-6",
-        "py-8",
+        "py-12",
         "min-h-svh",
+        "bg-[#f8fafc] dark:bg-zinc-950",
+        "overflow-hidden",
       )}
     >
-      <div className={cn("flex", "items-center", "justify-center", "gap-2")}>
-        {title.icon && (
-          <div
-            className={cn("text-foreground", "[&>svg]:w-12", "[&>svg]:h-12")}
-          >
-            {title.icon}
-          </div>
-        )}
-      </div>
+      {/* Decorative Background Blobs & Grid Pattern */}
+      <div className="absolute top-10 right-10 w-44 h-44 opacity-25 dark:opacity-10 pointer-events-none bg-[radial-gradient(#3b82f6_1.5px,transparent_1.5px)] [background-size:16px_16px]" />
+      <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-blue-500/10 dark:bg-blue-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-500/10 dark:bg-indigo-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[20%] left-[-10%] w-[400px] h-[400px] rounded-full bg-violet-500/10 dark:bg-violet-500/5 blur-[120px] pointer-events-none" />
 
-      <Card className={cn("sm:w-[456px]", "p-12", "mt-6")}>
-        <CardHeader className={cn("px-0")}>
-          <CardTitle
-            className={cn(
-              "text-green-600",
-              "dark:text-green-400",
-              "text-3xl",
-              "font-semibold",
-            )}
-          >
+      <Card
+        className={cn(
+          "card",
+          "relative z-10",
+          "sm:w-[480px] w-full",
+          "p-10 sm:p-12",
+          "rounded-3xl",
+          "border border-slate-100 dark:border-zinc-900/80",
+          "bg-white/95 dark:bg-zinc-950/80",
+          "shadow-[0_20px_50px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]",
+          "backdrop-blur-xl",
+          "transition-all duration-500",
+        )}
+      >
+        <CardHeader className="header text-center space-y-2 pb-6 px-0 pt-0">
+          <CardTitle className="title text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600 dark:from-primary dark:to-indigo-400">
             Sign up
           </CardTitle>
-          <CardDescription
-            className={cn("text-muted-foreground", "font-medium")}
-          >
-            Welcome to lorem ipsum dolor.
+          <CardDescription className="description text-slate-500 dark:text-slate-400 text-sm font-medium tracking-wide">
+            Create your new account to get started
           </CardDescription>
         </CardHeader>
 
-        <Separator />
-
-        <CardContent className="content">
+        <CardContent className="content p-0">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="form space-y-2"
+              className="form space-y-4"
             >
               <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role *</FormLabel>
+                  <FormItem className="field space-y-1.5 text-left">
+                    <FormLabel className="text-slate-800 dark:text-slate-200 text-sm font-bold tracking-wide">
+                      Role *
+                    </FormLabel>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
                         value={field.value}
-                        className="flex sm:flex-row gap-4 w-full"
+                        className="roles flex sm:flex-row gap-4 w-full"
                       >
                         {ROLE_OPTIONS.map((role) => {
                           const isSelected = field.value === role.value;
+                          const Icon = role.icon;
                           return (
                             <Label
                               key={role.value}
                               htmlFor={`role-${role.value}`}
                               className={cn(
-                                "w-full flex items-center space-x-3 rounded-md border border-input bg-background px-4 py-3 hover:bg-accent/50 cursor-pointer transition-all duration-200",
-                                isSelected &&
-                                  "border-primary bg-primary/10 text-primary",
+                                "relative w-full flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer transition-all duration-300 select-none group",
+                                isSelected
+                                  ? "border-primary bg-primary/10 text-primary shadow-xs shadow-primary/5"
+                                  : "border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-slate-500 hover:bg-slate-50 dark:hover:bg-zinc-900/50 hover:text-slate-800 dark:hover:text-slate-200",
                               )}
                             >
                               <RadioGroupItem
                                 value={role.value}
                                 id={`role-${role.value}`}
+                                className="sr-only"
                               />
-                              <span className="font-semibold text-sm flex-1">
+                              <div
+                                className={cn(
+                                  "flex items-center justify-center p-2 rounded-lg transition-colors duration-300 [&>svg]:size-5",
+                                  isSelected
+                                    ? "bg-primary/20 text-primary"
+                                    : "bg-slate-100 dark:bg-zinc-800 text-slate-500 group-hover:text-slate-800 dark:group-hover:text-slate-200",
+                                )}
+                              >
+                                <Icon />
+                              </div>
+                              <span className="font-bold text-sm flex-1">
                                 {role.label}
                               </span>
+                              {isSelected && (
+                                <div className="size-2 rounded-full bg-primary" />
+                              )}
                             </Label>
                           );
                         })}
                       </RadioGroup>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -212,8 +233,10 @@ export const SignUpForm = () => {
                 control={form.control}
                 name="image"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Profile Photo</FormLabel>
+                  <FormItem className="field space-y-1.5 text-left">
+                    <FormLabel className="text-slate-800 dark:text-slate-200 text-sm font-bold tracking-wide">
+                      Profile Photo
+                    </FormLabel>
                     <FormControl>
                       <UploadWidget
                         value={
@@ -241,7 +264,7 @@ export const SignUpForm = () => {
                         }}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -250,12 +273,21 @@ export const SignUpForm = () => {
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
+                  <FormItem className="field space-y-1.5 text-left">
+                    <FormLabel className="text-slate-800 dark:text-slate-200 text-sm font-bold tracking-wide">
+                      Name
+                    </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <div className="relative flex items-center">
+                        <User className="absolute left-4 h-5 w-5 text-slate-400 pointer-events-none" />
+                        <Input
+                          placeholder="Your full name"
+                          className="pl-12 h-12 rounded-xl bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary text-slate-900 dark:text-white transition-all duration-200"
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -264,12 +296,22 @@ export const SignUpForm = () => {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
+                  <FormItem className="field space-y-1.5 text-left">
+                    <FormLabel className="text-slate-800 dark:text-slate-200 text-sm font-bold tracking-wide">
+                      Email
+                    </FormLabel>
                     <FormControl>
-                      <Input type="email" {...field} />
+                      <div className="relative flex items-center">
+                        <Mail className="absolute left-4 h-5 w-5 text-slate-400 pointer-events-none" />
+                        <Input
+                          type="email"
+                          placeholder="name@example.com"
+                          className="pl-12 h-12 rounded-xl bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary text-slate-900 dark:text-white transition-all duration-200"
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -278,55 +320,55 @@ export const SignUpForm = () => {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
+                  <FormItem className="field space-y-1.5 text-left">
+                    <FormLabel className="text-slate-800 dark:text-slate-200 text-sm font-bold tracking-wide">
+                      Password
+                    </FormLabel>
                     <FormControl>
-                      <InputPassword
-                        {...field}
-                        placeholder="Enter your password"
-                      />
+                      <div className="relative flex items-center">
+                        <Lock className="absolute left-4 h-5 w-5 text-slate-400 pointer-events-none z-10" />
+                        <InputPassword
+                          placeholder="••••••••"
+                          className="pl-12 h-12 rounded-xl bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary text-slate-900 dark:text-white transition-all duration-200 w-full"
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
 
               <Button
                 type="submit"
-                size="lg"
-                className={cn(
-                  "w-full",
-                  "mt-6",
-                  "bg-green-600",
-                  "hover:bg-green-700",
-                  "text-white",
-                )}
+                className="submit w-full h-12 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/25 dark:shadow-primary/10 hover:shadow-primary/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                 disabled={form.formState.isSubmitting || isRegistering}
               >
-                {form.formState.isSubmitting || isRegistering
-                  ? "Signing up..."
-                  : "Sign up"}
+                {form.formState.isSubmitting || isRegistering ? (
+                  <>
+                    <Loader2 className="animate-spin h-5 w-5" />
+                    <span>Signing up...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign up</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
 
               {/* Will implement signup/ sign in using google and github */}
 
-              {/* <div className={cn("flex", "items-center", "gap-4", "mt-6")}>
-              <Separator className={cn("flex-1")} />
-              <span className={cn("text-sm", "text-muted-foreground")}>or</span>
-              <Separator className={cn("flex-1")} />
-            </div>
-
-            <div className={cn("flex", "flex-col", "gap-4", "mt-6")}>
-              <div className={cn("grid grid-cols-2", "gap-6")}>
+              {/* <div className="grid grid-cols-2 gap-4 mt-6">
                 <Button
                   variant="outline"
-                  className={cn("flex", "items-center", "gap-2")}
+                  className="flex items-center justify-center gap-2 h-10 border-border/50 bg-slate-50/20 hover:bg-slate-50/50 dark:bg-zinc-900/10 dark:hover:bg-zinc-900/30 cursor-pointer rounded-xl transition-all duration-300 hover:-translate-y-0.5"
                   onClick={handleSignUpWithGoogle}
                   type="button"
                 >
                   <svg
-                    width="21"
-                    height="20"
+                    width="16"
+                    height="16"
                     viewBox="0 0 21 20"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -336,17 +378,17 @@ export const SignUpForm = () => {
                       fill="currentColor"
                     />
                   </svg>
-                  <div>Google</div>
+                  <span className="text-sm font-medium">Google</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className={cn("flex", "items-center", "gap-2")}
+                  className="flex items-center justify-center gap-2 h-10 border-border/50 bg-slate-50/20 hover:bg-slate-50/50 dark:bg-zinc-900/10 dark:hover:bg-zinc-900/30 cursor-pointer rounded-xl transition-all duration-300 hover:-translate-y-0.5"
                   onClick={handleSignUpWithGitHub}
                   type="button"
                 >
                   <svg
-                    width="21"
-                    height="20"
+                    width="16"
+                    height="16"
                     viewBox="0 0 21 20"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -358,29 +400,21 @@ export const SignUpForm = () => {
                       fill="currentColor"
                     />
                   </svg>
-                  <div>GitHub</div>
+                  <span className="text-sm font-medium">GitHub</span>
                 </Button>
-              </div>
-            </div> */}
+              </div> */}
             </form>
           </Form>
         </CardContent>
 
-        <Separator />
+        <div className="h-[1px] bg-border/50 w-full my-6" />
 
-        <CardFooter>
-          <div className={cn("w-full", "text-center text-sm")}>
-            <span className={cn("text-sm", "text-muted-foreground")}>
-              Have an account?{" "}
-            </span>
+        <CardFooter className="p-0 flex justify-center">
+          <div className="text-sm text-center font-medium">
+            <span className="text-muted-foreground">Have an account? </span>
             <Link
               to="/login"
-              className={cn(
-                "text-blue-600",
-                "dark:text-blue-400",
-                "font-semibold",
-                "underline",
-              )}
+              className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-bold hover:underline transition-colors cursor-pointer"
             >
               Sign in
             </Link>
