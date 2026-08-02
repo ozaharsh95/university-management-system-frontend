@@ -201,7 +201,7 @@ export const SignInForm = () => {
                         <InputPassword
                           id="password"
                           required
-                          placeholder=""
+                          placeholder="••••••••"
                           className="pl-12 h-12 rounded-xl bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary text-slate-900 dark:text-white transition-all duration-200"
                           {...field}
                         />

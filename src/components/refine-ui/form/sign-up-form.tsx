@@ -409,12 +409,12 @@ export const SignUpForm = () => {
 
         <div className="h-[1px] bg-border/50 w-full my-6" />
 
-        <CardFooter className="p-0 flex justify-center">
+        <CardFooter className="footer p-0 flex justify-center">
           <div className="text-sm text-center font-medium">
             <span className="text-muted-foreground">Have an account? </span>
             <Link
               to="/login"
-              className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-bold hover:underline transition-colors cursor-pointer"
+              className="text-primary hover:text-primary/90 font-bold hover:underline transition-colors cursor-pointer"
             >
               Sign in
             </Link>
