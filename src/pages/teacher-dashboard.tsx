@@ -31,19 +31,19 @@ interface ActivityResponse {
 const TecherDashboard = () => {
   // Fetch overview stats
   const { query: overviewQuery } = useCustom<OverviewResponse>({
-    url: `${BACKEND_BASE_URL}stats/teacher/overview`,
+    url: `${BACKEND_BASE_URL}/stats/teacher/overview`,
     method: "get",
   });
 
   // Fetch charts data
   const { query: chartsQuery } = useCustom<ChartsResponse>({
-    url: `${BACKEND_BASE_URL}stats/teacher/charts`,
+    url: `${BACKEND_BASE_URL}/stats/teacher/charts`,
     method: "get",
   });
 
   // Fetch table data
   const { query: tableQuery } = useCustom<ActivityResponse>({
-    url: `${BACKEND_BASE_URL}stats/teacher/activity`,
+    url: `${BACKEND_BASE_URL}/stats/teacher/activity`,
     method: "get",
   });
 

@@ -1,20 +1,46 @@
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, Cell, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, PieChart, Pie } from "recharts";
-import { FileText, Printer, Building2, BookOpen, GraduationCap, Users, UserCheck } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  BarChart,
+  Bar,
+  Cell,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
+} from "recharts";
+import {
+  FileText,
+  Printer,
+  Building2,
+  BookOpen,
+  GraduationCap,
+  Users,
+  UserCheck,
+} from "lucide-react";
 import { useCustom } from "@refinedev/core";
 import { BACKEND_BASE_URL } from "@/constants";
 import { Button } from "@/components/ui/button";
 
 const ReportsPage = () => {
   const { query: overviewQuery } = useCustom<any>({
-    url: `${BACKEND_BASE_URL}stats/admin/overview`,
+    url: `${BACKEND_BASE_URL}/stats/admin/overview`,
     method: "get",
   });
 
   const { query: chartsQuery } = useCustom<any>({
-    url: `${BACKEND_BASE_URL}stats/admin/charts`,
+    url: `${BACKEND_BASE_URL}/stats/admin/charts`,
     method: "get",
   });
 
@@ -28,12 +54,20 @@ const ReportsPage = () => {
     window.print();
   };
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#82ca9d"];
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884d8",
+    "#82ca9d",
+  ];
 
-  const classStatusData = charts.classesStatusWise?.map((item: any) => ({
-    name: item.status.toUpperCase(),
-    value: Number(item.count),
-  })) || [];
+  const classStatusData =
+    charts.classesStatusWise?.map((item: any) => ({
+      name: item.status.toUpperCase(),
+      value: Number(item.count),
+    })) || [];
 
   return (
     <ListView>
@@ -42,10 +76,14 @@ const ReportsPage = () => {
           <Breadcrumb />
           <h1 className="page-title font-bold">University Analytics Reports</h1>
           <p className="text-muted-foreground text-sm">
-            High-level academic analytics, department allocations, and teacher workloads.
+            High-level academic analytics, department allocations, and teacher
+            workloads.
           </p>
         </div>
-        <Button onClick={handlePrint} className="flex gap-2 bg-primary hover:bg-primary/95 text-primary-foreground">
+        <Button
+          onClick={handlePrint}
+          className="flex gap-2 bg-primary hover:bg-primary/95 text-primary-foreground"
+        >
           <Printer className="h-4 w-4" /> Print / Save PDF
         </Button>
       </div>
@@ -58,8 +96,12 @@ const ReportsPage = () => {
               <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Departments</p>
-              <h3 className="text-xl font-bold mt-0.5">{isOverviewLoading ? "..." : overview.departmentCount}</h3>
+              <p className="text-xs text-muted-foreground font-medium">
+                Departments
+              </p>
+              <h3 className="text-xl font-bold mt-0.5">
+                {isOverviewLoading ? "..." : overview.departmentCount}
+              </h3>
             </div>
           </div>
         </Card>
@@ -70,8 +112,12 @@ const ReportsPage = () => {
               <BookOpen className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Subjects</p>
-              <h3 className="text-xl font-bold mt-0.5">{isOverviewLoading ? "..." : overview.subjectCount}</h3>
+              <p className="text-xs text-muted-foreground font-medium">
+                Subjects
+              </p>
+              <h3 className="text-xl font-bold mt-0.5">
+                {isOverviewLoading ? "..." : overview.subjectCount}
+              </h3>
             </div>
           </div>
         </Card>
@@ -82,8 +128,12 @@ const ReportsPage = () => {
               <GraduationCap className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Classes</p>
-              <h3 className="text-xl font-bold mt-0.5">{isOverviewLoading ? "..." : overview.classesCount}</h3>
+              <p className="text-xs text-muted-foreground font-medium">
+                Classes
+              </p>
+              <h3 className="text-xl font-bold mt-0.5">
+                {isOverviewLoading ? "..." : overview.classesCount}
+              </h3>
             </div>
           </div>
         </Card>
@@ -94,8 +144,12 @@ const ReportsPage = () => {
               <UserCheck className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Enrollments</p>
-              <h3 className="text-xl font-bold mt-0.5">{isOverviewLoading ? "..." : overview.enrollmentsCount}</h3>
+              <p className="text-xs text-muted-foreground font-medium">
+                Enrollments
+              </p>
+              <h3 className="text-xl font-bold mt-0.5">
+                {isOverviewLoading ? "..." : overview.enrollmentsCount}
+              </h3>
             </div>
           </div>
         </Card>
@@ -106,8 +160,12 @@ const ReportsPage = () => {
               <Users className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Students</p>
-              <h3 className="text-xl font-bold mt-0.5">{isOverviewLoading ? "..." : overview.studentCount}</h3>
+              <p className="text-xs text-muted-foreground font-medium">
+                Students
+              </p>
+              <h3 className="text-xl font-bold mt-0.5">
+                {isOverviewLoading ? "..." : overview.studentCount}
+              </h3>
             </div>
           </div>
         </Card>
@@ -118,8 +176,12 @@ const ReportsPage = () => {
               <Users className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs text-muted-foreground font-medium">Teachers</p>
-              <h3 className="text-xl font-bold mt-0.5">{isOverviewLoading ? "..." : overview.teacherCount}</h3>
+              <p className="text-xs text-muted-foreground font-medium">
+                Teachers
+              </p>
+              <h3 className="text-xl font-bold mt-0.5">
+                {isOverviewLoading ? "..." : overview.teacherCount}
+              </h3>
             </div>
           </div>
         </Card>
@@ -130,20 +192,35 @@ const ReportsPage = () => {
         {/* Classes per Department */}
         <Card className="border border-border shadow-sm p-6">
           <CardHeader className="p-0 pb-4">
-            <CardTitle className="text-lg font-bold">Classes per Department</CardTitle>
-            <CardDescription className="text-xs">Number of active classes registered within each faculty department.</CardDescription>
+            <CardTitle className="text-lg font-bold">
+              Classes per Department
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Number of active classes registered within each faculty
+              department.
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0 mt-4">
             {isChartsLoading ? (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading charts...</div>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Loading charts...
+              </div>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={charts.classesPerDepartment || []}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    opacity={0.3}
+                  />
                   <XAxis dataKey="departmentName" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Bar dataKey="totalClasses" fill="#8884d8" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="totalClasses"
+                    fill="#8884d8"
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -153,20 +230,34 @@ const ReportsPage = () => {
         {/* Students per Department */}
         <Card className="border border-border shadow-sm p-6">
           <CardHeader className="p-0 pb-4">
-            <CardTitle className="text-lg font-bold">Students per Department</CardTitle>
-            <CardDescription className="text-xs">Distribution of unique student enrollments across departments.</CardDescription>
+            <CardTitle className="text-lg font-bold">
+              Students per Department
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Distribution of unique student enrollments across departments.
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0 mt-4">
             {isChartsLoading ? (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading charts...</div>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Loading charts...
+              </div>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={charts.studentsPerDepartment || []}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    opacity={0.3}
+                  />
                   <XAxis dataKey="departmentName" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Bar dataKey="totalStudents" fill="#82ca9d" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="totalStudents"
+                    fill="#82ca9d"
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -176,14 +267,22 @@ const ReportsPage = () => {
         {/* Classes Status Distribution */}
         <Card className="border border-border shadow-sm p-6">
           <CardHeader className="p-0 pb-4">
-            <CardTitle className="text-lg font-bold">Class Status Distribution</CardTitle>
-            <CardDescription className="text-xs">Breakdown of active, inactive, and archived class segments.</CardDescription>
+            <CardTitle className="text-lg font-bold">
+              Class Status Distribution
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Breakdown of active, inactive, and archived class segments.
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0 mt-4 flex justify-center">
             {isChartsLoading ? (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading charts...</div>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Loading charts...
+              </div>
             ) : classStatusData.length === 0 ? (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">No class status data.</div>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                No class status data.
+              </div>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -192,13 +291,18 @@ const ReportsPage = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    label={({ name, percent }) =>
+                      `${name} (${(percent * 100).toFixed(0)}%)`
+                    }
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
                   >
                     {classStatusData.map((_: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -212,20 +316,39 @@ const ReportsPage = () => {
         {/* Teacher Workload Analysis */}
         <Card className="border border-border shadow-sm p-6">
           <CardHeader className="p-0 pb-4">
-            <CardTitle className="text-lg font-bold">Teacher Workload (Top 5)</CardTitle>
-            <CardDescription className="text-xs">Instructors holding the highest number of assigned classes.</CardDescription>
+            <CardTitle className="text-lg font-bold">
+              Teacher Workload (Top 5)
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Instructors holding the highest number of assigned classes.
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0 mt-4">
             {isChartsLoading ? (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading charts...</div>
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                Loading charts...
+              </div>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={charts.topTeachers || []} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.3} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    horizontal={false}
+                    opacity={0.3}
+                  />
                   <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={100} />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    tick={{ fontSize: 11 }}
+                    width={100}
+                  />
                   <Tooltip />
-                  <Bar dataKey="classCount" fill="#FF8042" radius={[0, 4, 4, 0]} />
+                  <Bar
+                    dataKey="classCount"
+                    fill="#FF8042"
+                    radius={[0, 4, 4, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             )}

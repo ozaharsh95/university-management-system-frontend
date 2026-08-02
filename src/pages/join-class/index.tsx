@@ -1,10 +1,21 @@
 import { useState } from "react";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  GraduationCap,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { useCustomMutation } from "@refinedev/core";
 import { BACKEND_BASE_URL } from "@/constants";
 import { toast } from "sonner";
@@ -22,7 +33,7 @@ const JoinClass = () => {
 
     mutate(
       {
-        url: `${BACKEND_BASE_URL}enrollments/join`,
+        url: `${BACKEND_BASE_URL}/enrollments/join`,
         method: "post",
         values: {
           inviteCode: inviteCode.trim(),
@@ -31,14 +42,18 @@ const JoinClass = () => {
       {
         onSuccess: (response: any) => {
           setSuccessData(response.data?.data);
-          toast.success(response.data?.message || "Successfully joined the class!");
+          toast.success(
+            response.data?.message || "Successfully joined the class!",
+          );
           setInviteCode("");
         },
         onError: (err: any) => {
-          const errMsg = err?.response?.data?.error || "Failed to join class. Please check your code.";
+          const errMsg =
+            err?.response?.data?.error ||
+            "Failed to join class. Please check your code.";
           toast.error(errMsg);
         },
-      }
+      },
     );
   };
 
@@ -57,9 +72,12 @@ const JoinClass = () => {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
               <GraduationCap className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-2xl font-bold">Enter Invite Code</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Enter Invite Code
+            </CardTitle>
             <CardDescription>
-              Invite codes are usually 7 characters long containing letters and numbers.
+              Invite codes are usually 7 characters long containing letters and
+              numbers.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -77,7 +95,11 @@ const JoinClass = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-base font-semibold"
+                  disabled={isLoading}
+                >
                   {isLoading ? "Validating code..." : "Join Classroom"}
                   {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>
@@ -88,7 +110,9 @@ const JoinClass = () => {
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-lg text-foreground">Enrollment Confirmed</h3>
+                  <h3 className="font-bold text-lg text-foreground">
+                    Enrollment Confirmed
+                  </h3>
                   <p className="text-sm text-muted-foreground">
                     You have successfully registered for the class:
                   </p>
@@ -96,7 +120,11 @@ const JoinClass = () => {
                     Class ID: {successData.classId}
                   </p>
                 </div>
-                <Button variant="outline" className="mt-4" onClick={() => setSuccessData(null)}>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => setSuccessData(null)}
+                >
                   Join Another Class
                 </Button>
               </div>

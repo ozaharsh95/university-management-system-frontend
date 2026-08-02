@@ -31,19 +31,19 @@ interface ActivityResponse {
 const StudentDashboard = () => {
   // Fetch overview stats
   const { query: overviewQuery } = useCustom<OverviewResponse>({
-    url: `${BACKEND_BASE_URL}stats/student/overview`,
+    url: `${BACKEND_BASE_URL}/stats/student/overview`,
     method: "get",
   });
 
   // Fetch charts & weekly schedule data
   const { query: chartsQuery } = useCustom<ChartsResponse>({
-    url: `${BACKEND_BASE_URL}stats/student/charts`,
+    url: `${BACKEND_BASE_URL}/stats/student/charts`,
     method: "get",
   });
 
   // Fetch activity & timeline data
   const { query: activityQuery } = useCustom<ActivityResponse>({
-    url: `${BACKEND_BASE_URL}stats/student/activity`,
+    url: `${BACKEND_BASE_URL}/stats/student/activity`,
     method: "get",
   });
 
