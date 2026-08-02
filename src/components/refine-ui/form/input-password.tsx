@@ -11,7 +11,7 @@ export const InputPassword = ({ className, ...props }: InputPasswordProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className={cn("relative")}>
+    <div className={cn("relative w-full")}>
       <Input
         type={showPassword ? "text" : "password"}
         className={cn(className)}
@@ -21,7 +21,8 @@ export const InputPassword = ({ className, ...props }: InputPasswordProps) => {
         type="button"
         className={cn(
           "appearance-none",
-          "absolute right-3 top-1/2 -translate-y-1/2"
+          "absolute right-3 top-1/2 -translate-y-1/2",
+          "cursor-pointer",
         )}
         onClick={() => setShowPassword(!showPassword)}
       >
