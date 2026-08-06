@@ -31,6 +31,8 @@ import ProfilePage from "./pages/profile/index";
 import ReportsPage from "./pages/reports/index";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+import { ForgotPassword } from "./pages/forgot-password";
+import { ResetPassword } from "./pages/reset-password";
 import { UserRole } from "./types";
 import { RequireRole } from "./components/require-role";
 import { RESOURCE_ROLES } from "./constants";
@@ -156,6 +158,8 @@ function App() {
                 >
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                 </Route>
                 <Route
                   element={

@@ -160,4 +160,66 @@ export const authProvider: AuthProvider = {
       imageCldPubId: parsedUser.imageCldPubId,
     };
   },
+  forgotPassword: async ({ email }) => {
+    try {
+      // In better-auth, this initiates the request to send the reset link
+      const { error } = await authClient.requestPasswordReset({
+        email,
+        redirectTo: "/reset-password",
+      });
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            name: "Forgot password failed",
+            message: error.message || "Something went wrong.",
+          },
+        };
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: {
+          name: "Forgot password failed",
+          message: error.message || "Something went wrong.",
+        },
+      };
+    }
+  },
+  updatePassword: async ({ password, token }) => {
+    try {
+      const { error } = await authClient.resetPassword({
+        newPassword: password,
+        token: token || "",
+      });
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            name: "Password reset failed",
+            message: error.message || "Failed to reset password.",
+          },
+        };
+      }
+
+      return {
+        success: true,
+        redirectTo: "/login",
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: {
+          name: "Password reset failed",
+          message: error.message || "Something went wrong.",
+        },
+      };
+    }
+  },
 };
