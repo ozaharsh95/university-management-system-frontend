@@ -180,10 +180,6 @@ export const authProvider: AuthProvider = {
 
       return {
         success: true,
-        successNotification: {
-          message: "Check your email",
-          description: "We've sent you a password reset link.",
-        },
       };
     } catch (error: any) {
       return {
@@ -215,10 +211,6 @@ export const authProvider: AuthProvider = {
       return {
         success: true,
         redirectTo: "/login",
-        successNotification: {
-          message: "Password reset successful",
-          description: "You can now log in with your new password.",
-        },
       };
     } catch (error: any) {
       return {

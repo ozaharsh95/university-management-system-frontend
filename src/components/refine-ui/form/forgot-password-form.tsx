@@ -59,6 +59,7 @@ export const ForgotPasswordForm = () => {
           toast.success("Password reset email sent! Check your inbox.", {
             richColors: true,
           });
+          form.reset();
         },
         onError: (error) => {
           toast.error(error?.message || "Something went wrong. Please try again.", {
